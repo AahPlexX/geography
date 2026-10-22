@@ -1,14 +1,14 @@
-import type { Question } from '../types';
-import { compassQuestions } from './compass';
-import { extraQuestions } from './extra';
-import { globeQuestions } from './globe';
-import { visualStageForQuestion } from './question-visuals';
-import { symbolQuestions } from './symbols';
-import { usExpandedQuestions } from './us-expanded';
-import { usOriginalQuestionsA } from './us-original-a';
-import { usOriginalQuestionsB } from './us-original-b';
-import { worldExpandedQuestions } from './world-expanded';
-import { worldOriginalQuestions } from './world-original';
+import type { Question } from '../types.ts';
+import { compassQuestions } from './compass.ts';
+import { extraQuestions } from './extra.ts';
+import { globeQuestions } from './globe.ts';
+import { visualStageForQuestion } from './question-visuals.ts';
+import { symbolQuestions } from './symbols.ts';
+import { usExpandedQuestions } from './us-expanded.ts';
+import { usOriginalQuestionsA } from './us-original-a.ts';
+import { usOriginalQuestionsB } from './us-original-b.ts';
+import { worldExpandedQuestions } from './world-expanded.ts';
+import { worldOriginalQuestions } from './world-original.ts';
 
 const sourceQuestions = [
   ...globeQuestions,
