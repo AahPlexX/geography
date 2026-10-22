@@ -21,6 +21,7 @@ last_updated: 2026-10-21
 ## Authoritative project documents
 
 - Product/design requirements: `docs/superpowers/specs/2026-10-21-geography-study-site-design.md`
+- Active product/design amendments: `docs/superpowers/specs/2026-10-21-geography-study-site-amendments.md` (supersedes only the facts it explicitly enumerates)
 - Work-unit status and evidence: `docs/tracker/GEO-001.md`
 - Task execution state: `docs/tasks/GEO-001.md`
 - Work-unit index: `docs/INDEX.md`
@@ -31,7 +32,7 @@ Keep each fact in one authoritative place and link to it instead of copying it i
 ## Engineering defaults
 
 - Package manager: pnpm only.
-- Pin every direct dependency to an exact version; do not use caret or tilde ranges.
+- Pin every direct dependency version; do not use caret or tilde ranges.
 - Prefer existing code, then browser/platform APIs, then installed dependencies, then the smallest necessary custom code.
 - Do not add speculative abstractions, unused extension points, placeholder features, or dependencies without a present requirement.
 - Use the scripts declared by `package.json` as validation entrypoints after the scaffold exists. Do not invent commands that are not present in the repository.
