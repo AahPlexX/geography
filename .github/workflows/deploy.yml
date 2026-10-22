@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -34,36 +34,14 @@ jobs:
       - name: Install pnpm
         run: npm install --global pnpm@${PNPM_VERSION}
 
-      - name: Install dependencies and generate canonical lockfile
-        run: pnpm install --no-frozen-lockfile
-
-      - name: Commit generated pnpm lockfile
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ -z "$(git status --porcelain -- pnpm-lock.yaml)" ]; then
-            echo "pnpm-lock.yaml is already canonical and unchanged."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pnpm-lock.yaml
-          git commit -m "build: commit canonical pnpm lockfile"
-          git push origin HEAD:main
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Test
         run: pnpm test
 
       - name: Build
         run: pnpm build
-
-      - name: Preserve generated lockfile
-        uses: actions/upload-artifact@v7.0.2
-        with:
-          name: generated-pnpm-lock
-          path: pnpm-lock.yaml
-          if-no-files-found: error
-          retention-days: 1
 
       - name: Configure Pages
         uses: actions/configure-pages@v6.0.0
