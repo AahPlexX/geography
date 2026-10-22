@@ -86,7 +86,7 @@ export function QuestionPanel({ question, saved, position, total, hintOpen, spee
 
       <footer className="question-footer">
         <button type="button" className="secondary-button" onClick={onPrevious} disabled={atFirst}>Previous question</button>
-        <span>{question.origin}</span>
+        <span style={{ color: '#5f7385' }}>{question.origin}</span>
         <button type="button" className="primary-button" onClick={onNext}>{atLast ? 'View report card' : 'Next question'}</button>
       </footer>
     </section>
