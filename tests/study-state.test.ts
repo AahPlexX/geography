@@ -14,23 +14,27 @@ const curriculumFiles = [
 ];
 
 const readCurriculum = async () => Promise.all(curriculumFiles.map((path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8')));
+const idPattern = /(?:\bid\s*:|"id"\s*:)\s*(\d+)/g;
 
 test('question bank source contains exactly IDs 1 through 60 once each', async () => {
   const sources = await readCurriculum();
-  const ids = sources.flatMap((source) => [...source.matchAll(/\bid:(\d+),/g)].map((match) => Number(match[1]))).sort((a, b) => a - b);
+  const ids = sources.flatMap((source) => [...source.matchAll(idPattern)].map((match) => Number(match[1]))).sort((a, b) => a - b);
   assert.deepEqual(ids, Array.from({ length: 60 }, (_, index) => index + 1));
 });
 
 test('every question source contains four choices and exactly one correct choice', async () => {
   const sources = await readCurriculum();
-  const combined = sources.join('\n');
-  const questionStarts = [...combined.matchAll(/\bid:(\d+),/g)];
-  for (let index = 0; index < questionStarts.length; index += 1) {
-    const start = questionStarts[index].index ?? 0;
-    const end = questionStarts[index + 1]?.index ?? combined.length;
-    const block = combined.slice(start, end);
-    assert.equal((block.match(/isCorrect:/g) ?? []).length, 4, `question ${questionStarts[index][1]} must have four choices`);
-    assert.equal((block.match(/isCorrect:true/g) ?? []).length, 1, `question ${questionStarts[index][1]} must have one correct choice`);
+  for (const source of sources) {
+    const starts = [...source.matchAll(idPattern)];
+    for (let index = 0; index < starts.length; index += 1) {
+      const start = starts[index].index ?? 0;
+      const end = starts[index + 1]?.index ?? source.length;
+      const block = source.slice(start, end);
+      const choiceCount = (block.match(/(?:isCorrect\s*:|"isCorrect"\s*:)\s*(?:true|false)/g) ?? []).length;
+      const correctCount = (block.match(/(?:isCorrect\s*:|"isCorrect"\s*:)\s*true/g) ?? []).length;
+      assert.equal(choiceCount, 4, `question ${starts[index][1]} must have four choices`);
+      assert.equal(correctCount, 1, `question ${starts[index][1]} must have one correct choice`);
+    }
   }
 });
 
@@ -43,8 +47,12 @@ test('teacher-key hemisphere revisions remain authoritative', async () => {
   assert.match(sources, /EXACT three continents written in the Southern Hemisphere box/);
 });
 
-test('world map fetch uses Natural Earth 1:50m source', async () => {
-  const source = await readFile(new URL('../scripts/fetch-map.mjs', import.meta.url), 'utf8');
-  assert.match(source, /ne_50m_admin_0_countries/);
-  assert.doesNotMatch(source, /ne_110m_admin_0_countries/);
+test('world map source uses Natural Earth 1:50m country geometry', async () => {
+  const [fetchScript, mapData] = await Promise.all([
+    readFile(new URL('../scripts/fetch-map.mjs', import.meta.url), 'utf8'),
+    readFile(new URL('../src/lib/map-data.mjs', import.meta.url), 'utf8'),
+  ]);
+  assert.match(fetchScript, /NATURAL_EARTH_SOURCE/);
+  assert.match(mapData, /ne_50m_admin_0_countries/);
+  assert.doesNotMatch(mapData, /ne_110m_admin_0_countries/);
 });
