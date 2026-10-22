@@ -141,7 +141,7 @@ export function WorldMap({ onHotspot, selected }: Props) {
           );
         })}
       </svg>
-      <div className="map-notes">
+      <div className="map-notes" style={{ color: '#5f7385' }}>
         <p>Map geometry uses Natural Earth 1:50m country boundaries and the Natural Earth I projection.</p>
         <p><strong>Test note:</strong> hemisphere sorting questions follow the teacher’s worksheet key.</p>
       </div>
