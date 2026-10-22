@@ -40,11 +40,41 @@ const compassPoints = [
   ['South (S)', 'S', 'south'], ['Southwest (SW)', 'SW', 'southwest'], ['West (W)', 'W', 'west'], ['Northwest (NW)', 'NW', 'northwest'],
 ] as const;
 
+// Decorative rose geometry in a 200x200 viewBox centred on 0,0. Each point is a kite split down its axis into a light and dark half.
+const compassTicks = Array.from({ length: 24 }, (_, i) => i * 15);
+const compassCardinalAngles = [0, 90, 180, 270] as const;
+const compassIntermediateAngles = [45, 135, 225, 315] as const;
+
+function CompassRose() {
+  return (
+    <svg className="compass-rose" viewBox="-100 -100 200 200" aria-hidden="true" focusable="false">
+      <circle r="84" className="rose-ring" />
+      <circle r="66" className="rose-ring rose-ring-inner" />
+      {compassTicks.map((angle) => (
+        <line key={angle} className={angle % 45 === 0 ? 'rose-tick rose-tick-major' : 'rose-tick'} y1="-84" y2={angle % 45 === 0 ? -76 : -79} transform={`rotate(${angle})`} />
+      ))}
+      {compassIntermediateAngles.map((angle) => (
+        <g key={angle} transform={`rotate(${angle})`}>
+          <polygon className="rose-minor-light" points="0,-56 0,0 -9,-9" />
+          <polygon className="rose-minor-dark" points="0,-56 9,-9 0,0" />
+        </g>
+      ))}
+      {compassCardinalAngles.map((angle) => (
+        <g key={angle} transform={`rotate(${angle})`}>
+          <polygon className="rose-major-light" points="0,-74 0,0 -12,-12" />
+          <polygon className="rose-major-dark" points="0,-74 12,-12 0,0" />
+        </g>
+      ))}
+      <circle r="6" className="rose-hub" />
+    </svg>
+  );
+}
+
 function CompassStage({ onHotspot, selected }: StageBodyProps) {
   return (
     <div className="compass-stage">
       <div className="compass" role="group" aria-label="Eight-point compass rose">
-        <div className="compass-star" aria-hidden="true">✦</div>
+        <CompassRose />
         {compassPoints.map(([name, label, position]) => (
           <button type="button" key={name} className={`compass-point ${position}${selectedClass(selected, name)}`} onClick={() => onHotspot(name)} aria-label={name}>{label}</button>
         ))}

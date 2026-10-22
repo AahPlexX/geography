@@ -142,10 +142,16 @@ p { margin-block: 0; }
 
 .compass-stage { text-align: center; color: var(--muted); }
 .compass { position: relative; width: min(480px, 88vw); aspect-ratio: 1; margin: 0 auto 16px; border: 2px solid #d49c33; border-radius: 50%; background: #fff8dc; }
-.compass::before, .compass::after { content: ""; position: absolute; left: 50%; top: 50%; width: 70%; height: 2px; background: #d6ad5c; transform-origin: center; }
-.compass::before { transform: translate(-50%, -50%) rotate(45deg); }
-.compass::after { transform: translate(-50%, -50%) rotate(-45deg); }
-.compass-star { position: absolute; inset: 19%; display: grid; place-items: center; font-size: clamp(7rem, 20vw, 12rem); color: #1f3346; line-height: 1; }
+.compass-rose { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.rose-ring { fill: none; stroke: #d49c33; stroke-width: 1.2; }
+.rose-ring-inner { stroke: #e3c27a; stroke-width: .8; stroke-dasharray: 1.5 2.5; }
+.rose-tick { stroke: #c99a3d; stroke-width: .9; }
+.rose-tick-major { stroke: #9c6b18; stroke-width: 1.4; }
+.rose-minor-light { fill: #e6c372; }
+.rose-minor-dark { fill: #c99a3d; }
+.rose-major-light { fill: #46647f; }
+.rose-major-dark { fill: #1f3346; }
+.rose-hub { fill: #fff8dc; stroke: #1f3346; stroke-width: 2; }
 .compass-point { position: absolute; z-index: 2; min-width: 48px; min-height: 48px; border: 2px solid #9c6b18; border-radius: 50%; background: white; color: #593b09; font-weight: 900; transform: translate(-50%, -50%); }
 .compass-point.north { left: 50%; top: 4%; }.compass-point.northeast { left: 84%; top: 16%; }.compass-point.east { left: 96%; top: 50%; }.compass-point.southeast { left: 84%; top: 84%; }.compass-point.south { left: 50%; top: 96%; }.compass-point.southwest { left: 16%; top: 84%; }.compass-point.west { left: 4%; top: 50%; }.compass-point.northwest { left: 16%; top: 16%; }
 .compass-point:hover, .compass-point:focus-visible { background: #f7dd95; }
