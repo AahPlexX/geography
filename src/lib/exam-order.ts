@@ -45,7 +45,7 @@ export function parseExamOrder(raw: string | null, attemptId: string, validIds: 
 
 function saveExamOrder(storage: StorageLike, attemptId: string, ids: readonly number[]): boolean {
   try {
-    storage.setItem(EXAM_ORDER_KEY, JSON.stringify({ version: VERSION, attemptId, ids } satisfies StoredExamOrder));
+    storage.setItem(EXAM_ORDER_KEY, JSON.stringify({ version: VERSION, attemptId, ids: [...ids] } satisfies StoredExamOrder));
     return true;
   } catch {
     return false;
