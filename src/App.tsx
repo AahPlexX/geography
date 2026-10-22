@@ -315,7 +315,7 @@ export function App({ defaultView = 'quiz' }: AppProps) {
 
         <div
           className={`workspace workspace--${view}`}
-          style={!showStage && view !== 'study' ? { gridTemplateColumns: 'minmax(0, 1fr)', maxWidth: '1040px', marginInline: 'auto' } : undefined}
+          style={!showStage ? { gridTemplateColumns: 'minmax(0, 1fr)', maxWidth: '1040px', marginInline: 'auto' } : undefined}
         >
           {showStage && renderedStage && (
             <section className="stage-panel" aria-labelledby="study-stage-title">
