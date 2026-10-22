@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -34,9 +34,22 @@ jobs:
       - name: Install pnpm
         run: npm install --global pnpm@${PNPM_VERSION}
 
-      # shortcut: install is non-frozen until a canonical single-document pnpm 12 lockfile is committed; switch to --frozen-lockfile then.
-      - name: Install dependencies
+      - name: Install dependencies and generate canonical lockfile
         run: pnpm install --no-frozen-lockfile
+
+      - name: Commit generated pnpm lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain -- pnpm-lock.yaml)" ]; then
+            echo "pnpm-lock.yaml is already canonical and unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          git commit -m "build: commit canonical pnpm lockfile"
+          git push origin HEAD:main
 
       - name: Test
         run: pnpm test
