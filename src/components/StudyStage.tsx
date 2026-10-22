@@ -7,10 +7,12 @@ type Props = {
   selected?: { name: string; correct: boolean } | null;
 };
 
+type StageBodyProps = Omit<Props, 'stage'>;
+
 const selectedClass = (selected: Props['selected'], name: string) =>
   selected?.name === name ? (selected.correct ? ' is-correct' : ' is-wrong') : '';
 
-function GlobeStage({ onHotspot, selected }: Omit<Props, 'stage'>) {
+function GlobeStage({ onHotspot, selected }: StageBodyProps) {
   return (
     <div className="globe-grid" role="group" aria-label="Parts of a globe study diagram">
       <section className="globe-panel">
@@ -38,7 +40,7 @@ const compassPoints = [
   ['South (S)', 'S', 'south'], ['Southwest (SW)', 'SW', 'southwest'], ['West (W)', 'W', 'west'], ['Northwest (NW)', 'NW', 'northwest'],
 ] as const;
 
-function CompassStage({ onHotspot, selected }: Omit<Props, 'stage'>) {
+function CompassStage({ onHotspot, selected }: StageBodyProps) {
   return (
     <div className="compass-stage">
       <div className="compass" role="group" aria-label="Eight-point compass rose">
@@ -57,8 +59,9 @@ const usItems = [
   ['Mid-Atlantic', 'Large cities · Washington, D.C.'], ['New England', 'Forests · lakes · four seasons'], ['South', 'Warm climate · ports · rice'],
 ] as const;
 
-function UsStage({ onHotspot, selected }: Omit<Props, 'stage'>) {
-  const extra = ['Canada', 'Mexico', 'Gulf of Mexico', 'Rocky Mountains', 'Appalachian Mountains', 'Great Lakes', 'Alaska and Hawaii'];
+const usFeatures = ['Canada', 'Mexico', 'Gulf of Mexico', 'Rocky Mountains', 'Appalachian Mountains', 'Great Lakes', 'Alaska and Hawaii'] as const;
+
+function UsStage({ onHotspot, selected }: StageBodyProps) {
   return (
     <div className="us-stage">
       <div className="us-region-flow" role="group" aria-label="United States regions study diagram">
@@ -69,7 +72,7 @@ function UsStage({ onHotspot, selected }: Omit<Props, 'stage'>) {
         ))}
       </div>
       <div className="feature-chips" role="group" aria-label="United States geographic features">
-        {extra.map((name) => <button type="button" key={name} className={selectedClass(selected, name)} onClick={() => onHotspot(name)}>{name}</button>)}
+        {usFeatures.map((name) => <button type="button" key={name} className={selectedClass(selected, name)} onClick={() => onHotspot(name)}>{name}</button>)}
       </div>
     </div>
   );
@@ -80,7 +83,7 @@ const symbols = [
   ['Statue of Liberty', '🗽', 'Welcomes people to America'], ['The White House', '🏛️', 'President’s home and workplace'], ['Washington Monument', '▴', 'Honors George Washington'],
 ] as const;
 
-function SymbolsStage({ onHotspot, selected }: Omit<Props, 'stage'>) {
+function SymbolsStage({ onHotspot, selected }: StageBodyProps) {
   return (
     <div className="symbols-grid" role="group" aria-label="United States national symbols">
       {symbols.map(([name, icon, detail]) => (
@@ -93,9 +96,16 @@ function SymbolsStage({ onHotspot, selected }: Omit<Props, 'stage'>) {
 }
 
 export function StudyStage({ stage, onHotspot, selected }: Props) {
-  if (stage === 'world') return <WorldMap onHotspot={onHotspot} selected={selected} />;
-  if (stage === 'globe') return <GlobeStage onHotspot={onHotspot} selected={selected} />;
-  if (stage === 'compass') return <CompassStage onHotspot={onHotspot} selected={selected} />;
-  if (stage === 'us_map') return <UsStage onHotspot={onHotspot} selected={selected} />;
-  return <SymbolsStage onHotspot={onHotspot} selected={selected} />;
+  switch (stage) {
+    case 'world':
+      return <WorldMap onHotspot={onHotspot} selected={selected} />;
+    case 'globe':
+      return <GlobeStage onHotspot={onHotspot} selected={selected} />;
+    case 'compass':
+      return <CompassStage onHotspot={onHotspot} selected={selected} />;
+    case 'us_map':
+      return <UsStage onHotspot={onHotspot} selected={selected} />;
+    default:
+      return <SymbolsStage onHotspot={onHotspot} selected={selected} />;
+  }
 }
