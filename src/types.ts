@@ -13,6 +13,7 @@ export type Question = {
   id: number;
   category: Category;
   stage: Stage;
+  visualStage?: Stage | null;
   interactiveTarget: string | null;
   origin: string;
   question: string;

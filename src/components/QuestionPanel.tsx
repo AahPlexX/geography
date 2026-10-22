@@ -41,7 +41,7 @@ export function QuestionPanel({ question, saved, position, total, hintOpen, spee
   return (
     <section className="question-panel" aria-labelledby="question-title">
       <div className="question-meta">
-        <span className="question-number">Question {question.id}</span>
+        <span className="question-number">Question {position}</span>
         <span className="topic-name">{categoryLabels[question.category]}</span>
         <span className="sequence-position">{position} of {total}</span>
       </div>

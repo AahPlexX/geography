@@ -3,6 +3,7 @@ import { QuestionPanel } from './components/QuestionPanel';
 import { StudyReference } from './components/StudyReference';
 import { StudyStage } from './components/StudyStage';
 import { questions } from './data/questions';
+import { loadExamOrder } from './lib/exam-order';
 import { applyAnswer, categoryCounts, filterQuestions, matchHotspot, scoreAnswers, validateQuestionBank } from './lib/quiz';
 import { buildSpeechText } from './lib/speech';
 import { appendScoreRecord, createScoreRecord, loadAttemptId, loadScoreHistory, loadStoredProgress, saveScoreHistory, saveStoredProgress, startNewAttempt } from './lib/storage';
@@ -13,6 +14,8 @@ validateQuestionBank(questions);
 
 const QUESTION_MAP_PAGE_SIZE = 20;
 const validQuestionIds = new Set(questions.map((question) => question.id));
+const questionIds = questions.map((question) => question.id);
+const questionById = new Map(questions.map((question) => [question.id, question]));
 const answerIndex = new Map(questions.map((question) => [question.id, new Map(question.options.map((option) => [option.text, option.isCorrect]))]));
 const counts = categoryCounts(questions);
 const scoreDateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
@@ -44,7 +47,7 @@ const scoreMessage = (answered: number, accuracy: number) => {
   if (answered === 0) return 'Choose a question to begin.';
   if (accuracy >= 90) return 'Excellent recall. Review any missed questions once more before the test.';
   if (accuracy >= 75) return 'Strong progress. Revisit the questions marked for another try.';
-  return 'Keep practicing. Use the hint and study diagram when a question feels uncertain.';
+  return 'Keep practicing. Use the hint and study sheet when a question feels uncertain.';
 };
 
 const createAttemptId = () => {
@@ -52,12 +55,23 @@ const createAttemptId = () => {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 };
 
-export function App() {
+const questionsForOrder = (ids: readonly number[]) => ids.flatMap((id) => {
+  const question = questionById.get(id);
+  return question ? [question] : [];
+});
+
+type AppProps = {
+  defaultView?: ViewMode;
+};
+
+export function App({ defaultView = 'quiz' }: AppProps) {
   const initialUrl = useMemo(() => parseUrlState(window.location.search, validQuestionIds), []);
   const initialProgress = useMemo(() => loadStoredProgress(window.localStorage, answerIndex), []);
+  const [attemptId, setAttemptId] = useState(() => loadAttemptId(window.localStorage, createAttemptId));
+  const [examOrderIds, setExamOrderIds] = useState(() => loadExamOrder(window.localStorage, attemptId, questionIds));
   const [topic, setTopic] = useState<Topic>(initialUrl.topic);
-  const [view, setView] = useState<ViewMode>(initialUrl.view);
-  const [questionId, setQuestionId] = useState(initialUrl.questionId);
+  const [view, setView] = useState<ViewMode>(() => new URLSearchParams(window.location.search).has('view') ? initialUrl.view : defaultView);
+  const [questionId, setQuestionId] = useState(() => new URLSearchParams(window.location.search).has('q') ? initialUrl.questionId : (examOrderIds[0] ?? 1));
   const [hintOpen, setHintOpen] = useState(initialUrl.hintOpen);
   const [questionMapOpen, setQuestionMapOpen] = useState(initialUrl.questionMapOpen);
   const [mapPage, setMapPage] = useState(initialUrl.mapPage);
@@ -65,7 +79,6 @@ export function App() {
   const [answers, setAnswers] = useState<AnswerMap>(initialProgress.answers);
   const [streak, setStreak] = useState(initialProgress.streak);
   const [scoreHistory, setScoreHistory] = useState(() => loadScoreHistory(window.localStorage));
-  const [attemptId, setAttemptId] = useState(() => loadAttemptId(window.localStorage, createAttemptId));
   const [hotspotState, setHotspotState] = useState<{ name: string; correct: boolean } | null>(null);
   const [mapNudge, setMapNudge] = useState('');
   const [reportOpen, setReportOpen] = useState(false);
@@ -73,10 +86,13 @@ export function App() {
   const reportDialog = useRef<HTMLDialogElement>(null);
   const resetDialog = useRef<HTMLDialogElement>(null);
 
-  const filtered = useMemo(() => filterQuestions(questions, topic), [topic]);
+  const orderedQuestions = useMemo(() => questionsForOrder(examOrderIds), [examOrderIds]);
+  const filtered = useMemo(() => filterQuestions(orderedQuestions, topic), [orderedQuestions, topic]);
   const currentIndex = Math.max(0, filtered.findIndex((question) => question.id === questionId));
-  const current = filtered[currentIndex] ?? filtered[0] ?? questions[0];
-  const stage = stageOverride ?? current.stage;
+  const current = filtered[currentIndex] ?? filtered[0] ?? orderedQuestions[0] ?? questions[0];
+  const studyStage = stageOverride ?? current.stage;
+  const renderedStage = view === 'study' ? studyStage : (current.visualStage ?? null);
+  const showStage = view === 'study' || current.visualStage !== null && current.visualStage !== undefined;
   const score = useMemo(() => scoreAnswers(answers), [answers]);
   const totalPages = Math.max(1, Math.ceil(filtered.length / QUESTION_MAP_PAGE_SIZE));
   const safeMapPage = Math.min(mapPage, totalPages);
@@ -87,9 +103,9 @@ export function App() {
 
   useEffect(() => {
     if (!filtered.some((question) => question.id === questionId)) {
-      setQuestionId(filtered[0]?.id ?? 1);
+      setQuestionId(filtered[0]?.id ?? orderedQuestions[0]?.id ?? 1);
     }
-  }, [filtered, questionId]);
+  }, [filtered, orderedQuestions, questionId]);
 
   useEffect(() => {
     const nextUrl = serializeUrlState({
@@ -99,7 +115,7 @@ export function App() {
       hintOpen,
       questionMapOpen,
       mapPage: safeMapPage,
-      stage: stageOverride,
+      stage: view === 'study' ? stageOverride : null,
     });
     window.history.replaceState(null, '', `${window.location.pathname}${nextUrl}${window.location.hash}`);
   }, [topic, view, current.id, hintOpen, questionMapOpen, safeMapPage, stageOverride]);
@@ -148,8 +164,8 @@ export function App() {
 
   const chooseTopic = (nextTopic: Topic) => {
     setTopic(nextTopic);
-    const nextQuestions = filterQuestions(questions, nextTopic);
-    setQuestionId(nextQuestions[0]?.id ?? 1);
+    const nextQuestions = filterQuestions(orderedQuestions, nextTopic);
+    setQuestionId(nextQuestions[0]?.id ?? orderedQuestions[0]?.id ?? 1);
     setMapPage(1);
     setStageOverride(null);
   };
@@ -167,10 +183,17 @@ export function App() {
   };
 
   const activateHotspot = (name: string) => {
+    if (view === 'study') {
+      setHotspotState(null);
+      setMapNudge(`Reference selected: ${name}.`);
+      return;
+    }
+    if (current.visualStage === null || current.visualStage === undefined) return;
+
     const matched = matchHotspot(current, name);
     if (!matched) {
       setHotspotState(null);
-      setMapNudge(`You selected ${name}. Check the four choices and choose the one that answers this question.`);
+      setMapNudge(`Selected ${name} for reference. Choose the answer below that best matches the question.`);
       return;
     }
     setMapNudge('');
@@ -196,11 +219,17 @@ export function App() {
   };
 
   const resetProgress = () => {
+    const nextAttemptId = startNewAttempt(window.localStorage, createAttemptId);
+    const nextOrder = loadExamOrder(window.localStorage, nextAttemptId, questionIds);
+    const nextOrderedQuestions = questionsForOrder(nextOrder);
+    const nextFilteredQuestions = filterQuestions(nextOrderedQuestions, topic);
     setAnswers({});
     setStreak(0);
-    setAttemptId(startNewAttempt(window.localStorage, createAttemptId));
-    setQuestionId(filtered[0]?.id ?? 1);
+    setAttemptId(nextAttemptId);
+    setExamOrderIds(nextOrder);
+    setQuestionId(nextFilteredQuestions[0]?.id ?? nextOrder[0] ?? 1);
     setMapPage(1);
+    setStageOverride(null);
     setResetOpen(false);
   };
 
@@ -239,6 +268,8 @@ export function App() {
             })}
           </div>
           <div className="utility-actions">
+            <a className="secondary-button" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }} href={import.meta.env.BASE_URL}>Home</a>
+            <a className="secondary-button" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }} href={`${import.meta.env.BASE_URL}map/`}>Map</a>
             <button type="button" onClick={() => setQuestionMapOpen((open) => !open)} aria-expanded={questionMapOpen} aria-controls="question-map">Question map</button>
             <button type="button" onClick={() => setReportOpen(true)}>Report card</button>
             <button type="button" className="danger-text" onClick={() => setResetOpen(true)}>Reset progress</button>
@@ -252,21 +283,22 @@ export function App() {
               <button type="button" onClick={() => setQuestionMapOpen(false)}>Close question map</button>
             </div>
             <div className="jump-grid">
-              {visibleJumpQuestions.map((question) => {
+              {visibleJumpQuestions.map((question, index) => {
                 const saved = answers[question.id];
                 const status = saved ? (saved.isCorrect ? 'correct' : 'wrong') : 'unanswered';
                 const marker = status === 'correct' ? '✓' : status === 'wrong' ? '!' : '•';
                 const active = current.id === question.id;
+                const sequencePosition = (safeMapPage - 1) * QUESTION_MAP_PAGE_SIZE + index + 1;
                 return (
                   <button
                     key={question.id}
                     type="button"
                     className={`jump-button jump-button--${status}`}
                     aria-current={active ? 'true' : undefined}
-                    aria-label={`Question ${question.id}: ${status === 'correct' ? 'correct' : status === 'wrong' ? 'needs another try' : 'unanswered'}${active ? ', current question' : ''}`}
+                    aria-label={`Question ${sequencePosition}: ${status === 'correct' ? 'correct' : status === 'wrong' ? 'needs another try' : 'unanswered'}${active ? ', current question' : ''}`}
                     onClick={() => goToQuestion(question.id)}
                   >
-                    <span aria-hidden="true">{marker}</span> {question.id}
+                    <span aria-hidden="true">{marker}</span> {sequencePosition}
                   </button>
                 );
               })}
@@ -281,27 +313,34 @@ export function App() {
           </section>
         )}
 
-        <div className={`workspace workspace--${view}`}>
-          <section className="stage-panel" aria-labelledby="study-stage-title">
-            <div className="stage-toolbar">
-              <div>
-                <p>Study diagram</p>
-                <h2 id="study-stage-title">{stageChoices.find((choice) => choice.key === stage)?.label}</h2>
+        <div
+          className={`workspace workspace--${view}`}
+          style={!showStage && view !== 'study' ? { gridTemplateColumns: 'minmax(0, 1fr)', maxWidth: '1040px', marginInline: 'auto' } : undefined}
+        >
+          {showStage && renderedStage && (
+            <section className="stage-panel" aria-labelledby="study-stage-title">
+              <div className="stage-toolbar">
+                <div>
+                  <p>{view === 'study' ? 'Study diagram' : 'Question visual'}</p>
+                  <h2 id="study-stage-title">{stageChoices.find((choice) => choice.key === renderedStage)?.label}</h2>
+                </div>
+                {view === 'study' && (
+                  <div className="stage-tabs" role="group" aria-label="Study diagram">
+                    {stageChoices.map(({ key, label }) => (
+                      <button key={key} type="button" aria-pressed={renderedStage === key} onClick={() => setStageOverride(key)}>{label}</button>
+                    ))}
+                  </div>
+                )}
               </div>
-              <div className="stage-tabs" role="group" aria-label="Study diagram">
-                {stageChoices.map(({ key, label }) => (
-                  <button key={key} type="button" aria-pressed={stage === key} onClick={() => setStageOverride(key)}>{label}</button>
-                ))}
+              <div className="stage-canvas">
+                <StudyStage stage={renderedStage} onHotspot={activateHotspot} selected={view === 'study' ? null : hotspotState} />
               </div>
-            </div>
-            <div className="stage-canvas">
-              <StudyStage stage={stage} onHotspot={activateHotspot} selected={hotspotState} />
-            </div>
-            <div className="stage-note" aria-live="polite">
-              <span>{current.interactiveTarget ? 'Select the diagram or choose an answer.' : 'Use the diagram as a reference, then choose an answer.'}</span>
-              {mapNudge && <strong>{mapNudge}</strong>}
-            </div>
-          </section>
+              <div className="stage-note" aria-live="polite">
+                <span>{view === 'study' ? 'Reference only. Selecting a diagram item does not answer a question.' : current.interactiveTarget ? 'Select the visual or choose an answer.' : 'Use the visual as a reference, then choose an answer.'}</span>
+                {mapNudge && <strong>{mapNudge}</strong>}
+              </div>
+            </section>
+          )}
 
           {view !== 'study' && (
             <QuestionPanel
@@ -327,7 +366,7 @@ export function App() {
 
       <dialog ref={reportDialog} className="app-dialog" onClose={() => setReportOpen(false)}>
         <div className="dialog-body">
-          <div className="dialog-heading"><div><p>Report card</p><h2>Geography practice</h2></div><button type="button" aria-label="Close report card" onClick={() => setReportOpen(false)}>×</button></div>
+          <div className="dialog-heading"><div><p>Report card</p><h2>{view === 'quiz' ? 'Geography exam' : 'Geography practice'}</h2></div><button type="button" aria-label="Close report card" onClick={() => setReportOpen(false)}>×</button></div>
           <div className="report-grid">
             <div><strong>{score.answered} / {questions.length}</strong><span>Questions</span></div>
             <div><strong>{score.correct}</strong><span>Correct</span></div>
@@ -362,7 +401,7 @@ export function App() {
       <dialog ref={resetDialog} className="app-dialog" onClose={() => setResetOpen(false)}>
         <div className="dialog-body">
           <div className="dialog-heading"><div><p>Reset progress</p><h2>Start the quiz again?</h2></div><button type="button" aria-label="Close reset confirmation" onClick={() => setResetOpen(false)}>×</button></div>
-          <p>This clears all saved answers and the current streak on this device and starts a new attempt. Your score history stays saved, and the {questions.length} study questions stay unchanged.</p>
+          <p>This clears all saved answers and the current streak on this device, starts a new attempt, and creates a new randomized question order. Your score history stays saved, and the {questions.length} study questions stay unchanged.</p>
           <div className="dialog-actions"><button type="button" className="secondary-button" onClick={() => setResetOpen(false)}>Keep progress</button><button type="button" className="danger-button" onClick={resetProgress}>Reset progress</button></div>
         </div>
       </dialog>
