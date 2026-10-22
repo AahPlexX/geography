@@ -34,6 +34,7 @@ jobs:
       - name: Install pnpm
         run: npm install --global pnpm@${PNPM_VERSION}
 
+      # shortcut: install is non-frozen until a canonical single-document pnpm 12 lockfile is committed; switch to --frozen-lockfile then.
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 

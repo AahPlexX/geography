@@ -2,11 +2,15 @@
 
 A focused Grade 3 geography study site built from the supplied Bayou Bridges and world-geography quiz. The primary learner is the owner's son preparing for school tests; the site is public so anyone can use the same study set.
 
-Target site: `https://aahplexx.github.io/geography/`
+Live site: `https://aahplexx.github.io/geography/`
 
 ## Current state
 
-Implementation is in progress on `main`. The Vite + React + TypeScript + Tailwind client, 60-question curriculum, versioned local progress, deep-linked study state, five instructional stages, Natural Earth 1:50m world map pipeline, automated domain/data tests, and GitHub Pages workflow are implemented in the current work unit. Local dependency-free tests pass; dependency installation, production build, Pages deployment, lockfile finalization, and browser QA require GitHub Actions because this execution container cannot reach the npm registry.
+The Vite + React + TypeScript + Tailwind client is live on GitHub Pages. The deployed app includes the 60-question teacher-aligned curriculum, versioned local progress, URL-deep-linked study state, five instructional stages, read-aloud support, report card, and the Natural Earth 1:50m world map pipeline.
+
+GitHub Actions run `39712628445` successfully tested, built, deployed, then fetched the public site, its hashed JavaScript bundle, and the deployed `data/world-countries.geojson` asset. The public smoke check measured the deployed map asset at 2,278,348 bytes.
+
+Deployed-browser screenshot QA at 390 px, 768 px, and 1440 px remains outstanding. The current CI install is non-frozen while a canonical single-document pnpm 12 lockfile is normalized; all direct dependencies remain exact-pinned.
 
 ## Authoritative documents
 
