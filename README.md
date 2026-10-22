@@ -8,9 +8,11 @@ Live site: `https://aahplexx.github.io/geography/`
 
 The Vite + React + TypeScript + Tailwind client is live on GitHub Pages. The deployed app includes the 60-question teacher-aligned curriculum, versioned local progress, URL-deep-linked study state, five instructional stages, read-aloud support, report card, and the Natural Earth 1:50m world map pipeline.
 
-GitHub Actions run `39712628445` successfully tested, built, deployed, then fetched the public site, its hashed JavaScript bundle, and the deployed `data/world-countries.geojson` asset. The public smoke check measured the deployed map asset at 2,278,348 bytes.
+GitHub Actions run `39722080226` on commit `8f19ab6122b44d8ba2f3ccfdd5f0297d232973d2` successfully completed the frozen pnpm install, tests, TypeScript/Vite build, Pages deployment, and public smoke verification. The smoke check confirms the public HTML, hashed JavaScript bundle, and detailed `data/world-countries.geojson` asset remain reachable.
 
-Deployed-browser screenshot QA at 390 px, 768 px, and 1440 px remains outstanding. The current CI install is non-frozen while a canonical single-document pnpm 12 lockfile is normalized; all direct dependencies remain exact-pinned.
+The pnpm 12 lockfile is committed and CI uses `pnpm install --frozen-lockfile`. Its two YAML documents are the expected pnpm 12 layout when the project pins pnpm through `packageManager`: the leading environment document records the package-manager dependency and the final document records the application dependency graph. `pnpm-workspace.yaml` keeps pnpm's default release-age protection while narrowly excluding the already-reviewed exact pin `vite@8.3.5`, which was less than 24 hours old when frozen CI was first enabled.
+
+Deployed-browser screenshot QA at 390 px, 768 px, and 1440 px remains outstanding because the available browser connectors are currently unavailable; this does not block production availability.
 
 ## Authoritative documents
 
