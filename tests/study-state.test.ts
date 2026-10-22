@@ -15,11 +15,23 @@ const curriculumFiles = [
 
 const readCurriculum = async () => Promise.all(curriculumFiles.map((path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8')));
 const idPattern = /(?:\bid\s*:|"id"\s*:)\s*(\d+)/g;
+const categoryPattern = /(?:\bcategory\s*:|"category"\s*:)\s*['"]([^'"]+)['"]/g;
+const stagePattern = /(?:\bstage\s*:|"stage"\s*:)\s*['"]([^'"]+)['"]/g;
 
 test('question bank source contains exactly IDs 1 through 60 once each', async () => {
   const sources = await readCurriculum();
   const ids = sources.flatMap((source) => [...source.matchAll(idPattern)].map((match) => Number(match[1]))).sort((a, b) => a - b);
   assert.deepEqual(ids, Array.from({ length: 60 }, (_, index) => index + 1));
+});
+
+test('authoritative category counts and stage keys match the active specification', async () => {
+  const sources = await readCurriculum();
+  const categories = sources.flatMap((source) => [...source.matchAll(categoryPattern)].map((match) => match[1]));
+  const counts = Object.fromEntries(['globe', 'world', 'compass', 'us_regions', 'symbols'].map((category) => [category, categories.filter((value) => value === category).length]));
+  assert.deepEqual(counts, { globe: 10, world: 17, compass: 7, us_regions: 19, symbols: 7 });
+
+  const stages = new Set(sources.flatMap((source) => [...source.matchAll(stagePattern)].map((match) => match[1])));
+  assert.deepEqual([...stages].sort(), ['compass', 'globe', 'symbols', 'us_map', 'world']);
 });
 
 test('every question source contains four choices and exactly one correct choice', async () => {

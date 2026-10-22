@@ -3,13 +3,14 @@ project: AahPlexX/geography
 work_unit: GEO-001
 document_status: active
 authoritative_branch: main
-last_updated: 2026-10-21
+last_updated: 2026-10-22
 ---
 
 # Decision log
 
 Newest first. One material fact per line.
 
+- 2026-10-22 D-022: Runtime acceptance coverage directly exercises quiz transitions, hotspot matching, URL parse/serialize behavior, versioned storage validation/fail-soft behavior, and speech-text generation with Node's built-in test runner; source-level curriculum/accessibility invariants remain in the separate study-state test file. Source: `tests/domain-state.test.ts`, `tests/study-state.test.ts`, and `package.json`.
 - 2026-10-21 D-021: Deployed accessibility validation uses real-browser WCAG 2.2 A/AA automation across representative URL-deep-linked states in addition to source/build tests. The scans exposed invalid names on plain `div` elements and three low-contrast text treatments; those defects were repaired. Final 1440 px scans for default globe, world, compass, U.S. regions, symbols, Study Sheet, and open Question Map states report zero automated failures. These scans are evidence, not a compliance determination, and do not replace the still-required manual/screenshot interaction QA. Source: accessibility scan IDs `2d366eea-eaab-4ad3-8ace-ebd377780409`, `aedfbd3b-478e-44a5-a32a-2691970a2824`, `3ae95962-ce16-40d7-a4e3-c595140189ba`, `69fe9c39-f0c1-4ec6-ba6f-8aa83ccaa055`, `24d08b0b-67f7-469e-b346-606b063c0d2b`, `bf93f089-7526-4539-812b-28c447125dcd`, and `b083eb7d-39f8-4224-bbbe-20638fe0bf0d`.
 - 2026-10-21 D-020: pnpm 12's two-document `pnpm-lock.yaml` is canonical when the project pins pnpm through `packageManager`: the leading environment document records the resolved package-manager dependency and the final document records the application dependency graph. D-018's single-document requirement was incorrect and is superseded. Source: pnpm lockfile/package.json documentation and committed `pnpm-lock.yaml`.
 - 2026-10-21 D-019: CI now installs with `pnpm install --frozen-lockfile`; Actions run `39722080226` passed frozen install, tests, build, Pages deploy, and public smoke. pnpm's default 24-hour `minimumReleaseAge` policy remains enabled; `pnpm-workspace.yaml` narrowly excludes exact pin `vite@8.3.5` because that release was less than 24 hours old when frozen CI was enabled. Source: `.github/workflows/deploy.yml`, `pnpm-workspace.yaml`, and Actions run `39722080226`.

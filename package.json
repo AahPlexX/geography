@@ -13,7 +13,7 @@
     "prebuild": "node scripts/fetch-map.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "test": "node --experimental-strip-types --test tests/study-state.test.ts",
+    "test": "node --experimental-strip-types --test tests/study-state.test.ts tests/domain-state.test.ts",
     "validate": "pnpm test && pnpm build"
   },
   "dependencies": {
