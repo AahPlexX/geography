@@ -195,7 +195,7 @@ export function App() {
               <button key={key} type="button" aria-pressed={view === key} onClick={() => setView(key)}>{label}</button>
             ))}
           </nav>
-          <div className="score-strip" aria-label="Quiz progress">
+          <div className="score-strip" role="group" aria-label="Quiz progress">
             <span><strong>{score.answered}</strong> of {questions.length} done</span>
             <span><strong>{score.accuracy}%</strong> accuracy</span>
             <span><strong>{streak}</strong> streak</span>
@@ -209,7 +209,7 @@ export function App() {
           <div className="topic-scroll">
             {topicChoices.map(({ key, label }) => {
               const count = key === 'all' ? questions.length : counts[key];
-              return <button key={key} type="button" aria-pressed={topic === key} onClick={() => chooseTopic(key)}>{label} <span>{count}</span></button>;
+              return <button key={key} type="button" aria-pressed={topic === key} onClick={() => chooseTopic(key)}>{label} <span style={{ opacity: topic === key ? 1 : 0.8 }}>{count}</span></button>;
             })}
           </div>
           <div className="utility-actions">
@@ -246,7 +246,7 @@ export function App() {
               })}
             </div>
             {totalPages > 1 && (
-              <div className="pagination" aria-label="Question map pages">
+              <div className="pagination" role="group" aria-label="Question map pages">
                 <button type="button" disabled={safeMapPage === 1} onClick={() => setMapPage((page) => Math.max(1, page - 1))}>Previous 20</button>
                 <span>Page {safeMapPage} of {totalPages}</span>
                 <button type="button" disabled={safeMapPage === totalPages} onClick={() => setMapPage((page) => Math.min(totalPages, page + 1))}>Next 20</button>
@@ -262,7 +262,7 @@ export function App() {
                 <p>Study diagram</p>
                 <h2 id="study-stage-title">{stageChoices.find((choice) => choice.key === stage)?.label}</h2>
               </div>
-              <div className="stage-tabs" aria-label="Study diagram">
+              <div className="stage-tabs" role="group" aria-label="Study diagram">
                 {stageChoices.map(({ key, label }) => (
                   <button key={key} type="button" aria-pressed={stage === key} onClick={() => setStageOverride(key)}>{label}</button>
                 ))}

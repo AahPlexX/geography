@@ -49,7 +49,7 @@ export function QuestionPanel({ question, saved, position, total, hintOpen, spee
 
       {hintOpen && <aside id="question-hint" className="hint-box"><strong>Hint:</strong> {question.hint}</aside>}
 
-      <div className="answer-list" aria-label="Answer choices">
+      <div className="answer-list" role="group" aria-label="Answer choices">
         {question.options.map((option, index) => {
           const selected = saved?.selectedText === option.text;
           const state = saved ? option.isCorrect ? 'correct' : selected ? 'wrong' : 'muted' : 'open';

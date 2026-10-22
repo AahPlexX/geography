@@ -12,10 +12,10 @@ const selectedClass = (selected: Props['selected'], name: string) =>
 
 function GlobeStage({ onHotspot, selected }: Omit<Props, 'stage'>) {
   return (
-    <div className="globe-grid" aria-label="Parts of a globe study diagram">
+    <div className="globe-grid" role="group" aria-label="Parts of a globe study diagram">
       <section className="globe-panel">
         <h3>Equator: north and south</h3>
-        <div className="globe globe-horizontal" aria-label="Globe divided by the Equator">
+        <div className="globe globe-horizontal" role="group" aria-label="Globe divided by the Equator">
           <button type="button" className={`hemisphere north${selectedClass(selected, 'Northern Hemisphere')}`} onClick={() => onHotspot('Northern Hemisphere')}>Northern Hemisphere</button>
           <button type="button" className={`hemisphere south${selectedClass(selected, 'Southern Hemisphere')}`} onClick={() => onHotspot('Southern Hemisphere')}>Southern Hemisphere</button>
           <button type="button" className={`globe-line equator${selectedClass(selected, 'Equator')}`} onClick={() => onHotspot('Equator')}>Equator · 0°</button>
@@ -23,7 +23,7 @@ function GlobeStage({ onHotspot, selected }: Omit<Props, 'stage'>) {
       </section>
       <section className="globe-panel">
         <h3>Prime Meridian: west and east</h3>
-        <div className="globe globe-vertical" aria-label="Globe divided by the Prime Meridian">
+        <div className="globe globe-vertical" role="group" aria-label="Globe divided by the Prime Meridian">
           <button type="button" className={`hemisphere west${selectedClass(selected, 'Western Hemisphere')}`} onClick={() => onHotspot('Western Hemisphere')}>Western Hemisphere</button>
           <button type="button" className={`hemisphere east${selectedClass(selected, 'Eastern Hemisphere')}`} onClick={() => onHotspot('Eastern Hemisphere')}>Eastern Hemisphere</button>
           <button type="button" className={`globe-line meridian${selectedClass(selected, 'Prime Meridian')}`} onClick={() => onHotspot('Prime Meridian')}>Prime Meridian</button>
@@ -41,7 +41,7 @@ const compassPoints = [
 function CompassStage({ onHotspot, selected }: Omit<Props, 'stage'>) {
   return (
     <div className="compass-stage">
-      <div className="compass" aria-label="Eight-point compass rose">
+      <div className="compass" role="group" aria-label="Eight-point compass rose">
         <div className="compass-star" aria-hidden="true">✦</div>
         {compassPoints.map(([name, label, position]) => (
           <button type="button" key={name} className={`compass-point ${position}${selectedClass(selected, name)}`} onClick={() => onHotspot(name)} aria-label={name}>{label}</button>
@@ -61,14 +61,14 @@ function UsStage({ onHotspot, selected }: Omit<Props, 'stage'>) {
   const extra = ['Canada', 'Mexico', 'Gulf of Mexico', 'Rocky Mountains', 'Appalachian Mountains', 'Great Lakes', 'Alaska and Hawaii'];
   return (
     <div className="us-stage">
-      <div className="us-region-flow" aria-label="United States regions study diagram">
+      <div className="us-region-flow" role="group" aria-label="United States regions study diagram">
         {usItems.map(([name, detail]) => (
           <button type="button" key={name} className={`us-region ${name.toLowerCase().replaceAll(' ', '-')}${selectedClass(selected, name)}`} onClick={() => onHotspot(name)}>
             <strong>{name}</strong><span>{detail}</span>
           </button>
         ))}
       </div>
-      <div className="feature-chips" aria-label="United States geographic features">
+      <div className="feature-chips" role="group" aria-label="United States geographic features">
         {extra.map((name) => <button type="button" key={name} className={selectedClass(selected, name)} onClick={() => onHotspot(name)}>{name}</button>)}
       </div>
     </div>
@@ -82,7 +82,7 @@ const symbols = [
 
 function SymbolsStage({ onHotspot, selected }: Omit<Props, 'stage'>) {
   return (
-    <div className="symbols-grid" aria-label="United States national symbols">
+    <div className="symbols-grid" role="group" aria-label="United States national symbols">
       {symbols.map(([name, icon, detail]) => (
         <button type="button" key={name} className={`symbol-item${selectedClass(selected, name)}`} onClick={() => onHotspot(name)}>
           <span className="symbol-icon" aria-hidden="true">{icon}</span><strong>{name}</strong><span>{detail}</span>

@@ -56,3 +56,14 @@ test('world map source uses Natural Earth 1:50m country geometry', async () => {
   assert.match(mapData, /ne_50m_admin_0_countries/);
   assert.doesNotMatch(mapData, /ne_110m_admin_0_countries/);
 });
+
+test('named div containers declare a role that supports their accessible name', async () => {
+  const paths = ['src/App.tsx', 'src/components/QuestionPanel.tsx', 'src/components/StudyStage.tsx'];
+  for (const path of paths) {
+    const source = await readFile(new URL(`../${path}`, import.meta.url), 'utf8');
+    const namedDivs = source.match(/<div\b[^>]*\baria-label\s*=[^>]*>/g) ?? [];
+    for (const element of namedDivs) {
+      assert.match(element, /\brole="group"/, `${path} has an aria-labelled div without role="group": ${element}`);
+    }
+  }
+});
