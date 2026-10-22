@@ -12,9 +12,9 @@
 
 ## GEO-002 — Interactive World Explorer
 
-- Status: design approved; authoritative specification being recorded; implementation not started.
+- Status: architecture approved; committed specification awaiting owner review; implementation not started.
 - Product/design requirements: `docs/superpowers/specs/2026-10-22-interactive-world-explorer-design.md`
-- Implementation plan: not yet written; writing begins only after owner review/approval of the committed design specification.
+- Implementation plan: not yet written; begins only after owner approval of the committed specification.
 - Status/evidence: `docs/tracker/GEO-002.md`
 - Task execution: `docs/tasks/GEO-002.md`
 

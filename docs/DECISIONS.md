@@ -1,6 +1,6 @@
 ---
 project: AahPlexX/geography
-work_unit: GEO-001
+work_units: [GEO-001, GEO-002]
 document_status: active
 authoritative_branch: main
 last_updated: 2026-10-22
@@ -10,7 +10,11 @@ last_updated: 2026-10-22
 
 Newest first. One material fact per line.
 
-- 2026-10-22 D-028: Post-deploy smoke verification covers all three public HTML entry points (`/geography/`, `/geography/exam/`, and `/geography/map/`) with expected page titles, verifies a hashed JavaScript bundle from each page, and continues to verify the detailed world-map data asset. Source: `.github/workflows/deploy.yml`.
+- 2026-10-22 D-032: GEO-002 required functionality may not depend on a source that requires signup, payment, a private token, or an API key; Natural Earth is the canonical spatial source, while World Bank and Wikimedia are optional fail-soft enrichment sources only. Source: `docs/superpowers/specs/2026-10-22-interactive-world-explorer-design.md`.
+- 2026-10-22 D-031: GEO-002 uses a local-first static atlas architecture: build-time validated/chunked geographic assets and a compact local search/entity index are authoritative; detailed layers load progressively and external API failure cannot blank core exploration. Source: GEO-002 spec.
+- 2026-10-22 D-030: The Interactive World Explorer is a separate project-within-the-project at `/geography/explore/`; existing landing, exam, Study Sheet, score history, and standalone `/map/` behavior remain preserved. Source: GEO-002 spec.
+- 2026-10-22 D-029: GEO-002 core interactions require parity across touch, mouse, wheel/trackpad, and keyboard; no required task may rely only on hover or only on a gesture. Source: GEO-002 spec.
+- 2026-10-22 D-028: Post-deploy smoke verification covers all three existing public HTML entry points (`/geography/`, `/geography/exam/`, and `/geography/map/`) with expected page titles, verifies a hashed JavaScript bundle from each page, and continues to verify the detailed world-map data asset. GEO-002 will extend this gate to `/geography/explore/` before release. Source: `.github/workflows/deploy.yml` and GEO-002 spec.
 - 2026-10-22 D-027: The root `/geography/` route is a learner landing page rather than an active exam; `/geography/exam/` and `/geography/map/` are real GitHub Pages HTML entry points sharing the existing React bundle-selection logic, with no router dependency. Source: active amendment A-009.
 - 2026-10-22 D-026: Exam order is one persisted Fisher-Yates permutation per attempt, generated with default random source `Math.random()` and reused on reload; reset/new attempt generates a new permutation, while stable curriculum IDs remain answer/deep-link keys and learner-facing numbering uses sequence position. Source: active amendment A-009.
 - 2026-10-22 D-025: Exam/practice visuals are explicit opt-in question data and never inferred from category or legacy study stage; non-visual questions render no diagram, teacher-key sorting questions remain non-visual when an accurate map could conflict with the worksheet key, and Study Sheet/standalone-map interactions are reference-only. Source: active amendment A-009.
