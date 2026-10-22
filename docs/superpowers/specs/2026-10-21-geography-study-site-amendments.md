@@ -3,7 +3,7 @@ project: AahPlexX/geography
 work_unit: GEO-001
 document_status: active
 authoritative_branch: main
-last_updated: 2026-10-21
+last_updated: 2026-10-22
 ---
 
 # Geography Study Site Active Amendments
@@ -29,9 +29,9 @@ This amendment replaces GEO-001-003.
 
 **GEO-001-003 — Category integrity**
 
-**Behavior:** Category counts are derived from the authoritative 60 question objects rather than duplicated display constants: `globe=10`, `world=17`, `compass=7`, `us_regions=19`, `symbols=7`.
+**Behavior:** Category counts are derived from the authoritative question objects rather than duplicated display constants.
 
-**Acceptance test:** Dataset invariants assert those exact counts, and filter labels render counts from the dataset rather than hard-coded badge text from the source HTML.
+**Acceptance test:** Dataset invariants assert the exact active category counts, and filter labels render counts from the dataset rather than hard-coded badge text from the source HTML.
 
 ## A-003 — Lean test runner
 
@@ -54,3 +54,37 @@ This amendment extends Sections 6 and GEO-001-017. The URL owns `topic`, `view`,
 ## A-006 — Current CI runtime baseline
 
 GitHub Actions uses Node.js `22.23.4` LTS for the release workflow. Vite's `/geography/` base and pnpm-only requirement are unchanged.
+
+## A-007 — Same-test curriculum expansion
+
+### GEO-001-032 — Expanded 80-question bank
+
+**Behavior:** The quiz contains exactly 80 unique questions with IDs `1` through `80`. Questions `61` through `80` add non-conflicting practice drawn only from concepts already present in the existing worksheet/study-guide material, rationales, and study reference. The teacher worksheet hemisphere key in A-001 remains unchanged. Active category totals are `globe=13`, `world=22`, `compass=10`, `us_regions=25`, `symbols=10`.
+
+**Acceptance test:** Source/data invariants assert IDs `1..80` exactly once, four choices and one correct answer per question, the exact category totals, and retention of the teacher-key regression strings.
+
+## A-008 — Persistent submitted score history
+
+### GEO-001-033 — Score-history persistence boundary
+
+**Behavior:** In-progress answers continue using the existing progress store. Submitted scores use a separate versioned local-storage record and are never written merely because an answer changes. Resetting current practice does not erase score history.
+
+**Acceptance test:** Storage tests round-trip valid score history, reject malformed entries, fail soft when storage is unavailable, and keep score history independent from current-progress reset data.
+
+### GEO-001-034 — Attempted-question score calculation
+
+**Behavior:** A submitted score percentage is calculated from questions actually answered, not from the full bank. Every submitted result displays both the percentage and the attempted count against the total bank, for example `3 / 80 questions • 100%` when three answered questions are all correct.
+
+**Acceptance test:** A score-record test submits `3` answered, `3` correct, total `80` and asserts `accuracy=100`, `answered=3`, and `total=80`.
+
+### GEO-001-035 — Valid submission lifecycle
+
+**Behavior:** A history entry is created only when the learner completes all 80 questions or explicitly chooses `Submit score early` after answering at least one but fewer than 80 questions. One early submission and one eventual completed submission may be stored for the same attempt; repeated activation of the same submission kind in the same attempt is a no-op. Resetting practice starts a new attempt identifier without deleting prior history.
+
+**Acceptance test:** Domain/storage tests reject empty submissions, reject an incomplete `completed` record, reject an `early` record with all questions answered, deduplicate the same attempt/kind, allow early then completed records for one attempt, and verify attempt ID rotation on reset.
+
+### GEO-001-036 — Score-history report UI
+
+**Behavior:** The report card shows the current score as percentage plus `answered / total questions`, exposes `Submit score early` only when at least one but fewer than all questions are answered, and lists persisted score history newest first with submission type and local date/time.
+
+**Acceptance test:** Source/browser inspection confirms the report card includes attempted/total context, conditional early-submit control, and a score-history list; manual browser QA verifies the interaction and persistence on reload.
