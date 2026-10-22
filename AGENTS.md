@@ -15,9 +15,9 @@ last_updated: 2026-10-22
 - `origin/main` is the only long-lived authoritative branch. Do not open pull requests unless the owner explicitly overrides this rule.
 - Before every write, verify repository, `main` tip, branch inventory, pull-request inventory, and the working state available through the active tool. Preserve changes you did not create.
 - Keep implementation, tracker, task, decision, and handoff state synchronized in the same work step. A stale tracker means the work is incomplete.
-- Never rewrite historical documents to make current state look cleaner. Record new facts in the active tracker or decision log.
+- Never rewrite historical documents to make current state look cleaner. Record new facts in the active tracker, status amendment, or decision log.
 - Never commit secrets, credentials, private keys, or user-identifying study/explorer data.
-- Treat `docs/INDEX.md` as the work-unit directory. Read the active tracker/task/spec/plan for the work unit being changed before editing production code.
+- Treat `docs/INDEX.md` as the work-unit directory. Read the active tracker/task/spec/approval/plan for the work unit being changed before editing production code.
 - `GEO-001` and `GEO-002` are separate work units. GEO-002 work must not satisfy its scope by deleting, repurposing, or weakening GEO-001 functionality.
 
 ## Authoritative project documents
@@ -25,7 +25,7 @@ last_updated: 2026-10-22
 ### GEO-001 — Geography Study Lab
 
 - Product/design requirements: `docs/superpowers/specs/2026-10-21-geography-study-site-design.md`
-- Active product/design amendments: `docs/superpowers/specs/2026-10-21-geography-study-site-amendments.md` (supersedes only the facts it explicitly enumerates)
+- Active product/design amendments: `docs/superpowers/specs/2026-10-21-geography-study-site-amendments.md`
 - Implementation plans: `docs/superpowers/plans/2026-10-21-geography-study-site.md` and `docs/superpowers/plans/2026-10-22-randomized-exam-map-visual-gating.md`
 - Work-unit status/evidence: `docs/tracker/GEO-001.md`
 - Task execution state: `docs/tasks/GEO-001.md`
@@ -33,7 +33,12 @@ last_updated: 2026-10-22
 ### GEO-002 — Interactive World Explorer
 
 - Product/design requirements: `docs/superpowers/specs/2026-10-22-interactive-world-explorer-design.md`
-- Implementation plan: not yet written; it begins only after owner review/approval of the committed GEO-002 specification.
+- Specification approval status: `docs/superpowers/specs/2026-10-22-interactive-world-explorer-approval.md`
+- Master implementation roadmap: `docs/superpowers/plans/2026-10-22-interactive-world-explorer.md`
+- Phase A — Foundation: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-foundation.md`
+- Phase B — Global Data Expansion: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-data.md`
+- Phase C — Learning & Enrichment: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-learning.md`
+- Phase D — Exploration Tools & Release Hardening: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-tools-release.md`
 - Work-unit status/evidence: `docs/tracker/GEO-002.md`
 - Task execution state: `docs/tasks/GEO-002.md`
 
@@ -59,6 +64,7 @@ Keep each fact in one authoritative place and link to it instead of copying it i
 - All client UI must remain usable without horizontal scrolling or typographic collisions across phone, tablet, desktop, and large displays.
 - Required functionality must not depend on paid/sign-up/private-key external services unless the owner explicitly approves a later architecture change.
 - External runtime data is untrusted: validate it, fail soft, and keep locally available product behavior usable when optional services fail.
+- For GEO-002, read both the master roadmap and the relevant phase plan before implementation; do not collapse phase boundaries or skip the recorded TDD/release gates.
 
 ## Current external standards baseline
 
@@ -74,5 +80,9 @@ Verified 2026-10-21/22 against official sources:
 - World Bank Indicators API: https://datahelpdesk.worldbank.org/knowledgebase/articles/889392
 - MediaWiki cross-site API: https://www.mediawiki.org/wiki/API:Cross-site_requests
 - D3 zoom: https://d3js.org/d3-zoom
+- npm `d3-zoom`: 3.0.0 verified 2026-10-22
+- npm `d3-selection`: 3.0.0 verified 2026-10-22
+- npm `@types/d3-zoom`: 3.0.9 verified 2026-10-22
+- npm `@types/d3-selection`: 3.0.12 verified 2026-10-22
 
 Re-verify externally changeable facts before changing dependencies, deployment configuration, browser API assumptions, or external runtime API contracts.

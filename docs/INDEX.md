@@ -12,9 +12,14 @@
 
 ## GEO-002 — Interactive World Explorer
 
-- Status: architecture approved; committed specification awaiting owner review; implementation not started.
+- Status: specification approved; implementation plan set written/self-reviewed; production implementation not started; execution-mode handoff is the next workflow gate.
 - Product/design requirements: `docs/superpowers/specs/2026-10-22-interactive-world-explorer-design.md`
-- Implementation plan: not yet written; begins only after owner approval of the committed specification.
+- Specification approval status: `docs/superpowers/specs/2026-10-22-interactive-world-explorer-approval.md`
+- Master implementation roadmap: `docs/superpowers/plans/2026-10-22-interactive-world-explorer.md`
+- Phase A — Foundation: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-foundation.md`
+- Phase B — Global Data Expansion: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-data.md`
+- Phase C — Learning & Enrichment: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-learning.md`
+- Phase D — Exploration Tools & Release Hardening: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-tools-release.md`
 - Status/evidence: `docs/tracker/GEO-002.md`
 - Task execution: `docs/tasks/GEO-002.md`
 
