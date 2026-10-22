@@ -1,13 +1,25 @@
----
-project: AahPlexX/geography
-work_unit: GEO-001
-document_status: active
-authoritative_branch: main
-last_updated: 2026-10-21
----
+# Geography project documentation index
 
-# Work-unit index
+## GEO-001 — Geography Study Lab
 
-| Work unit | Status | Base spec | Active amendments | Tracker | Tasks |
-| --- | --- | --- | --- | --- | --- |
-| GEO-001 Geography Study Lab | in_progress | `docs/superpowers/specs/2026-10-21-geography-study-site-design.md` | `docs/superpowers/specs/2026-10-21-geography-study-site-amendments.md` | `docs/tracker/GEO-001.md` | `docs/tasks/GEO-001.md` |
+- Product/design requirements: `docs/superpowers/specs/2026-10-21-geography-study-site-design.md`
+- Active product/design amendments: `docs/superpowers/specs/2026-10-21-geography-study-site-amendments.md`
+- Implementation plans:
+  - `docs/superpowers/plans/2026-10-21-geography-study-site.md`
+  - `docs/superpowers/plans/2026-10-22-randomized-exam-map-visual-gating.md`
+- Status/evidence: `docs/tracker/GEO-001.md`
+- Task execution: `docs/tasks/GEO-001.md`
+
+## GEO-002 — Interactive World Explorer
+
+- Status: design approved; implementation not started.
+- Product/design requirements: `docs/superpowers/specs/2026-10-22-interactive-world-explorer-design.md`
+- Implementation plan: not yet written; writing begins only after owner review/approval of the committed design specification.
+- Status/evidence: `docs/tracker/GEO-002.md`
+- Task execution: `docs/tasks/GEO-002.md`
+
+## Shared repository records
+
+- Decisions: `docs/DECISIONS.md`
+- Repository rules: `AGENTS.md`
+- Root project overview: `README.md`
