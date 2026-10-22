@@ -88,3 +88,29 @@ GitHub Actions uses Node.js `22.23.4` LTS for the release workflow. Vite's `/geo
 **Behavior:** The report card shows the current score as percentage plus `answered / total questions`, exposes `Submit score early` only when at least one but fewer than all questions are answered, and lists persisted score history newest first with submission type and local date/time.
 
 **Acceptance test:** Source/browser inspection confirms the report card includes attempted/total context, conditional early-submit control, and a score-history list; manual browser QA verifies the interaction and persistence on reload.
+
+## A-009 — Landing page, randomized exam, standalone map, and question-specific visuals
+
+### GEO-001-037 — Non-exam landing page and direct page URLs
+
+**Behavior:** `https://aahplexx.github.io/geography/` is a learner landing page rather than an active exam question. The landing page provides clear entry points to the randomized exam, study/practice experience, and standalone map. The exam is directly addressable at `/geography/exam/` and the standalone world map is directly addressable at `/geography/map/`. These paths are emitted as real GitHub Pages HTML entry points by the Vite build; no client router dependency is introduced.
+
+**Acceptance test:** Source/build tests assert dedicated `exam/index.html` and `map/index.html` inputs, route resolution for root/exam/map, and production build output for each direct page.
+
+### GEO-001-038 — Attempt-scoped randomized exam order
+
+**Behavior:** Each attempt receives one permutation of all 80 stable question IDs generated with a Fisher-Yates shuffle whose default random source is `Math.random()`. The permutation is stored with the active attempt ID and is reused on reload so an in-progress exam cannot reorder itself. Starting a new attempt generates and stores a fresh permutation. Topic filters preserve the relative order from that attempt permutation. Stable curriculum IDs remain persistence/deep-link keys but learner-facing numbering uses the current sequence position.
+
+**Acceptance test:** Unit tests prove the shuffle is a non-mutating permutation, a deterministic injected random source produces the expected Fisher-Yates order, the same attempt reloads its stored order without invoking randomness, and a new attempt invokes the random source again.
+
+### GEO-001-039 — Explicit question visual requirements
+
+**Behavior:** Question visuals are opt-in data, not inferred from category or the legacy study `stage`. The active question objects expose `visualStage: Stage | null`; `null` renders no exam/practice diagram. A curated question-to-visual mapping is the single source of truth for questions whose wording genuinely depends on a globe, world map, compass, U.S. study diagram, or symbol gallery. Teacher-key sorting questions that could conflict with geographically accurate map geometry remain non-visual.
+
+**Acceptance test:** Dataset tests assert the exact curated question-ID-to-visual-stage mapping and verify representative recall questions remain `visualStage=null`.
+
+### GEO-001-040 — Visual interaction isolation
+
+**Behavior:** In exam/practice, only the current question's configured visual may render. The learner cannot switch to unrelated diagrams from the question surface. A question visual may submit an answer only when the selected hotspot maps to the current question's answer contract; reference-only visual interactions never mutate score. In Study Sheet mode and on the standalone map page, diagram/map interaction is reference-only and cannot answer an exam question.
+
+**Acceptance test:** Source/domain tests confirm visual rendering is gated by `current.visualStage`, non-visual questions omit the stage panel, learner-facing numbering uses randomized position, and standalone/study map interaction is not wired to answer persistence. Manual browser QA verifies the same behavior once browser control is available.
