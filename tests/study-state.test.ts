@@ -11,6 +11,7 @@ const curriculumFiles = [
   'src/data/us-original-b.ts',
   'src/data/us-expanded.ts',
   'src/data/symbols.ts',
+  'src/data/extra.ts',
 ];
 
 const readCurriculum = async () => Promise.all(curriculumFiles.map((path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8')));
@@ -18,17 +19,17 @@ const idPattern = /(?:\bid\s*:|"id"\s*:)\s*(\d+)/g;
 const categoryPattern = /(?:\bcategory\s*:|"category"\s*:)\s*['"]([^'"]+)['"]/g;
 const stagePattern = /(?:\bstage\s*:|"stage"\s*:)\s*['"]([^'"]+)['"]/g;
 
-test('question bank source contains exactly IDs 1 through 60 once each', async () => {
+test('question bank source contains exactly IDs 1 through 80 once each', async () => {
   const sources = await readCurriculum();
   const ids = sources.flatMap((source) => [...source.matchAll(idPattern)].map((match) => Number(match[1]))).sort((a, b) => a - b);
-  assert.deepEqual(ids, Array.from({ length: 60 }, (_, index) => index + 1));
+  assert.deepEqual(ids, Array.from({ length: 80 }, (_, index) => index + 1));
 });
 
 test('authoritative category counts and stage keys match the active specification', async () => {
   const sources = await readCurriculum();
   const categories = sources.flatMap((source) => [...source.matchAll(categoryPattern)].map((match) => match[1]));
   const counts = Object.fromEntries(['globe', 'world', 'compass', 'us_regions', 'symbols'].map((category) => [category, categories.filter((value) => value === category).length]));
-  assert.deepEqual(counts, { globe: 10, world: 17, compass: 7, us_regions: 19, symbols: 7 });
+  assert.deepEqual(counts, { globe: 13, world: 22, compass: 10, us_regions: 25, symbols: 10 });
 
   const stages = new Set(sources.flatMap((source) => [...source.matchAll(stagePattern)].map((match) => match[1])));
   assert.deepEqual([...stages].sort(), ['compass', 'globe', 'symbols', 'us_map', 'world']);
@@ -78,4 +79,13 @@ test('named div containers declare a role that supports their accessible name', 
       assert.match(element, /\brole="group"/, `${path} has an aria-labelled div without role="group": ${element}`);
     }
   }
+});
+
+test('report card source exposes attempted count, explicit early submission, and persistent score history', async () => {
+  const source = await readFile(new URL('../src/App.tsx', import.meta.url), 'utf8');
+  assert.match(source, /score\.answered\} \/ \{questions\.length/);
+  assert.match(source, />Submit score early</);
+  assert.match(source, />Score history</);
+  assert.match(source, /loadScoreHistory\(window\.localStorage\)/);
+  assert.match(source, /startNewAttempt\(window\.localStorage/);
 });

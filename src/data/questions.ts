@@ -1,5 +1,6 @@
 import type { Question } from '../types';
 import { compassQuestions } from './compass';
+import { extraQuestions } from './extra';
 import { globeQuestions } from './globe';
 import { symbolQuestions } from './symbols';
 import { usExpandedQuestions } from './us-expanded';
@@ -17,4 +18,5 @@ export const questions: readonly Question[] = [
   ...symbolQuestions,
   ...worldExpandedQuestions,
   ...usExpandedQuestions,
+  ...extraQuestions,
 ].sort((a, b) => a.id - b.id);

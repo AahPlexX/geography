@@ -1,18 +1,20 @@
 # Geography Study Lab
 
-A focused Grade 3 geography study site built from the supplied Bayou Bridges and world-geography quiz. The primary learner is the owner's son preparing for school tests; the site is public so anyone can use the same study set.
+A focused Grade 3 geography study site built from the supplied Bayou Bridges and world-geography material. The primary learner is preparing for the same classroom test material; the site is public so anyone can use the same study set.
 
 Live site: `https://aahplexx.github.io/geography/`
 
 ## Current state
 
-The Vite + React + TypeScript + Tailwind client is live on GitHub Pages. The deployed app includes the 60-question teacher-aligned curriculum, versioned local progress, URL-deep-linked study state, five instructional stages, read-aloud support, report card, and the Natural Earth 1:50m world map pipeline.
+The last verified production release is live on GitHub Pages. The current `main` work unit expands the teacher-aligned 60-question bank to 80 questions using only same-material practice and adds separate persistent submitted-score history. In-progress answers remain locally saved as before; submitted score history is written only after all 80 questions are completed or when the learner explicitly chooses `Submit score early` after answering at least one question.
 
-GitHub Actions run `39788300241` on commit `6811a4bdd2a7ca69a5743eeec8db8acce2938c78` successfully completed the frozen pnpm install, expanded committed test suite, TypeScript/Vite build, Pages deployment, and public smoke verification. The smoke check confirms the public HTML, hashed JavaScript bundle, and detailed `data/world-countries.geojson` asset remain reachable.
+An early score uses only questions actually answered for its percentage and preserves the attempted count against the full bank. For example, three correct answers out of three attempted questions is stored and shown as `3 / 80 questions` with a `100%` score rather than implying that all 80 questions were completed.
 
-The pnpm 12 lockfile is committed and CI uses `pnpm install --frozen-lockfile`. Its two YAML documents are the expected pnpm 12 layout when the project pins pnpm through `packageManager`: the leading environment document records the package-manager dependency and the final document records the application dependency graph. `pnpm-workspace.yaml` keeps pnpm's default release-age protection while narrowly excluding the already-reviewed exact pin `vite@8.3.5`, which was less than 24 hours old when frozen CI was first enabled.
+The current implementation is under validation. Red TDD run `39790911108` verified that the new acceptance tests fail against the prior 60-question/storage implementation for the expected missing Q61–80/category totals and score-history APIs. The last fully green baseline pipeline is run `39788853472` on commit `50dd7a9e7199fcb32c2d3c37755d6a71dcc235cf`.
 
-Deployed 1440 px WCAG 2.2 A/AA automation reports zero failures for the default globe view, world map, compass, U.S. regions, symbols, Study Sheet, and open Question Map states. Those scans led to fixes for invalid accessible names and low-contrast topic, origin, and map-note text. The automated scans are evidence, not a compliance certification: they do not replace manual reading-order/screen-reader judgment or the still-required screenshot/interaction QA at 390 px, 768 px, and 1440 px.
+The pnpm 12 lockfile is committed and CI uses `pnpm install --frozen-lockfile`. The app remains a static Vite + React + TypeScript + Tailwind client with no account, backend, analytics service, or learner-identifying data collection.
+
+Deployed 1440 px WCAG 2.2 A/AA automation reports zero failures for seven representative baseline states. Those scans are evidence, not a compliance certification, and do not replace the still-required screenshot/interaction QA at 390 px, 768 px, and 1440 px.
 
 ## Authoritative documents
 

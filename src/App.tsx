@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import { QuestionPanel } from './components/QuestionPanel';
 import { StudyReference } from './components/StudyReference';
 import { StudyStage } from './components/StudyStage';
 import { questions } from './data/questions';
 import { applyAnswer, categoryCounts, filterQuestions, matchHotspot, scoreAnswers, validateQuestionBank } from './lib/quiz';
 import { buildSpeechText } from './lib/speech';
-import { loadStoredProgress, saveStoredProgress } from './lib/storage';
+import { appendScoreRecord, createScoreRecord, loadAttemptId, loadScoreHistory, loadStoredProgress, saveScoreHistory, saveStoredProgress, startNewAttempt } from './lib/storage';
 import { parseUrlState, serializeUrlState } from './lib/urlState';
 import type { AnswerMap, Stage, Topic, ViewMode } from './types';
 
@@ -15,6 +15,7 @@ const QUESTION_MAP_PAGE_SIZE = 20;
 const validQuestionIds = new Set(questions.map((question) => question.id));
 const answerIndex = new Map(questions.map((question) => [question.id, new Map(question.options.map((option) => [option.text, option.isCorrect]))]));
 const counts = categoryCounts(questions);
+const scoreDateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 
 const topicChoices: Array<{ key: Topic; label: string }> = [
   { key: 'all', label: 'All questions' },
@@ -46,6 +47,11 @@ const scoreMessage = (answered: number, accuracy: number) => {
   return 'Keep practicing. Use the hint and study diagram when a question feels uncertain.';
 };
 
+const createAttemptId = () => {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+};
+
 export function App() {
   const initialUrl = useMemo(() => parseUrlState(window.location.search, validQuestionIds), []);
   const initialProgress = useMemo(() => loadStoredProgress(window.localStorage, answerIndex), []);
@@ -58,6 +64,8 @@ export function App() {
   const [stageOverride, setStageOverride] = useState<Stage | null>(initialUrl.stage);
   const [answers, setAnswers] = useState<AnswerMap>(initialProgress.answers);
   const [streak, setStreak] = useState(initialProgress.streak);
+  const [scoreHistory, setScoreHistory] = useState(() => loadScoreHistory(window.localStorage));
+  const [attemptId, setAttemptId] = useState(() => loadAttemptId(window.localStorage, createAttemptId));
   const [hotspotState, setHotspotState] = useState<{ name: string; correct: boolean } | null>(null);
   const [mapNudge, setMapNudge] = useState('');
   const [reportOpen, setReportOpen] = useState(false);
@@ -74,6 +82,8 @@ export function App() {
   const safeMapPage = Math.min(mapPage, totalPages);
   const visibleJumpQuestions = filtered.slice((safeMapPage - 1) * QUESTION_MAP_PAGE_SIZE, safeMapPage * QUESTION_MAP_PAGE_SIZE);
   const speechSupported = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+  const earlySubmitted = scoreHistory.some((entry) => entry.attemptId === attemptId && entry.kind === 'early');
+  const completedSubmitted = scoreHistory.some((entry) => entry.attemptId === attemptId && entry.kind === 'completed');
 
   useEffect(() => {
     if (!filtered.some((question) => question.id === questionId)) {
@@ -118,6 +128,16 @@ export function App() {
     if (!resetOpen && dialog.open) dialog.close();
   }, [resetOpen]);
 
+  const persistScore = (currentScore: ReturnType<typeof scoreAnswers>, kind: 'early' | 'completed') => {
+    const record = createScoreRecord(currentScore, questions.length, kind, attemptId, new Date().toISOString());
+    if (!record) return;
+    setScoreHistory((history) => {
+      const nextHistory = appendScoreRecord(history, record);
+      if (nextHistory !== history) saveScoreHistory(window.localStorage, nextHistory);
+      return nextHistory;
+    });
+  };
+
   const goToQuestion = (id: number) => {
     setQuestionId(id);
     setStageOverride(null);
@@ -139,6 +159,11 @@ export function App() {
     if (!result.changed) return;
     setAnswers(result.answers);
     setStreak(result.streak);
+    const nextScore = scoreAnswers(result.answers);
+    if (nextScore.answered === questions.length) {
+      persistScore(nextScore, 'completed');
+      setReportOpen(true);
+    }
   };
 
   const activateHotspot = (name: string) => {
@@ -173,6 +198,7 @@ export function App() {
   const resetProgress = () => {
     setAnswers({});
     setStreak(0);
+    setAttemptId(startNewAttempt(window.localStorage, createAttemptId));
     setQuestionId(filtered[0]?.id ?? 1);
     setMapPage(1);
     setResetOpen(false);
@@ -303,19 +329,40 @@ export function App() {
         <div className="dialog-body">
           <div className="dialog-heading"><div><p>Report card</p><h2>Geography practice</h2></div><button type="button" aria-label="Close report card" onClick={() => setReportOpen(false)}>×</button></div>
           <div className="report-grid">
-            <div><strong>{score.answered}</strong><span>Answered</span></div>
+            <div><strong>{score.answered} / {questions.length}</strong><span>Questions</span></div>
             <div><strong>{score.correct}</strong><span>Correct</span></div>
-            <div><strong>{score.accuracy}%</strong><span>Accuracy</span></div>
+            <div><strong>{score.accuracy}%</strong><span>Score</span></div>
           </div>
           <p className="report-message">{scoreMessage(score.answered, score.accuracy)}</p>
-          <div className="dialog-actions"><button type="button" className="primary-button" onClick={() => setReportOpen(false)}>Continue practicing</button></div>
+          {earlySubmitted && score.answered < questions.length && <p className="submission-note" aria-live="polite">Early score saved. Keep practicing to add a completed score for this attempt.</p>}
+          {completedSubmitted && <p className="submission-note" aria-live="polite">Completed score saved to history.</p>}
+          <div className="dialog-actions">
+            <button type="button" className="secondary-button" onClick={() => setReportOpen(false)}>Continue practicing</button>
+            {score.answered > 0 && score.answered < questions.length && !earlySubmitted && <button type="button" className="primary-button" onClick={() => persistScore(score, 'early')}>Submit score early</button>}
+          </div>
+          <section className="score-history" aria-labelledby="score-history-title">
+            <h3 id="score-history-title">Score history</h3>
+            {scoreHistory.length === 0 ? (
+              <p>Complete the quiz or submit a partial score to start score history.</p>
+            ) : (
+              <ol className="score-history-list">
+                {scoreHistory.map((entry) => (
+                  <li key={`${entry.attemptId}-${entry.kind}`}>
+                    <div className="history-score"><strong>{entry.accuracy}%</strong><span>{entry.answered} / {entry.total} questions</span></div>
+                    <span className="history-kind">{entry.kind === 'completed' ? 'Completed' : 'Submitted early'}</span>
+                    <time dateTime={entry.submittedAt}>{scoreDateFormatter.format(new Date(entry.submittedAt))}</time>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </section>
         </div>
       </dialog>
 
       <dialog ref={resetDialog} className="app-dialog" onClose={() => setResetOpen(false)}>
         <div className="dialog-body">
           <div className="dialog-heading"><div><p>Reset progress</p><h2>Start the quiz again?</h2></div><button type="button" aria-label="Close reset confirmation" onClick={() => setResetOpen(false)}>×</button></div>
-          <p>This clears all saved answers and the current streak on this device. The 60 study questions stay unchanged.</p>
+          <p>This clears all saved answers and the current streak on this device and starts a new attempt. Your score history stays saved, and the {questions.length} study questions stay unchanged.</p>
           <div className="dialog-actions"><button type="button" className="secondary-button" onClick={() => setResetOpen(false)}>Keep progress</button><button type="button" className="danger-button" onClick={resetProgress}>Reset progress</button></div>
         </div>
       </dialog>
