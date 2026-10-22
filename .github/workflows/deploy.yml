@@ -67,23 +67,37 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy
     steps:
-      - name: Verify live HTML and critical assets
+      - name: Verify live pages and critical assets
         shell: bash
         run: |
           set -euo pipefail
-          site="https://aahplexx.github.io/geography/"
-          html=""
-          for attempt in {1..12}; do
-            if html="$(curl --fail --silent --show-error --location --max-time 20 "$site")"; then
-              break
-            fi
-            sleep 5
-          done
-          test -n "$html"
-          grep -Fq '<title>Geography Study Lab</title>' <<<"$html"
-          asset="$(grep -oE 'src="/geography/assets/[^"]+\.js"' <<<"$html" | head -n 1 | cut -d'"' -f2)"
-          test -n "$asset"
-          curl --fail --silent --show-error --location --max-time 30 "https://aahplexx.github.io${asset}" >/dev/null
-          map_bytes="$(curl --fail --silent --show-error --location --max-time 30 "$site"'data/world-countries.geojson' | wc -c)"
+          origin="https://aahplexx.github.io"
+          base="$origin/geography/"
+
+          fetch_page() {
+            local path="$1"
+            local expected_title="$2"
+            local url="${base}${path}"
+            local html=""
+            for attempt in {1..12}; do
+              if html="$(curl --fail --silent --show-error --location --max-time 20 "$url")"; then
+                break
+              fi
+              sleep 5
+            done
+            test -n "$html"
+            grep -Fq "<title>${expected_title}</title>" <<<"$html"
+            local asset
+            asset="$(grep -oE 'src="/geography/assets/[^"]+\.js"' <<<"$html" | head -n 1 | cut -d'"' -f2)"
+            test -n "$asset"
+            curl --fail --silent --show-error --location --max-time 30 "${origin}${asset}" >/dev/null
+            echo "Verified ${url} (${expected_title}) and its JavaScript bundle."
+          }
+
+          fetch_page "" "Geography Study Lab"
+          fetch_page "exam/" "Geography Exam"
+          fetch_page "map/" "Geography Map"
+
+          map_bytes="$(curl --fail --silent --show-error --location --max-time 30 "${base}data/world-countries.geojson" | wc -c)"
           test "$map_bytes" -gt 100000
-          echo "Verified live site, JavaScript bundle, and detailed world map asset (${map_bytes} bytes)."
+          echo "Verified detailed world map asset (${map_bytes} bytes)."
