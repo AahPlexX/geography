@@ -3,19 +3,20 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
+function polygon(lon, lat) {
+  return { type: 'Polygon', coordinates: [[[lon, lat], [lon + 1, lat], [lon + 1, lat + 1], [lon, lat]]] };
+}
+
 const fixture = {
   type: 'FeatureCollection',
   features: [
-    {
-      type: 'Feature',
-      properties: { NAME: 'France', CONTINENT: 'Europe', ADM0_A3: 'FRA' },
-      geometry: { type: 'Polygon', coordinates: [[[0, 0], [2, 0], [2, 2], [0, 0]]] },
-    },
-    {
-      type: 'Feature',
-      properties: { NAME: 'Australia', CONTINENT: 'Oceania', ADM0_A3: 'AUS' },
-      geometry: { type: 'Polygon', coordinates: [[[130, -30], [140, -30], [140, -20], [130, -30]]] },
-    },
+    { type: 'Feature', properties: { NAME: 'United States', CONTINENT: 'North America', ADM0_A3: 'USA' }, geometry: polygon(-100, 40) },
+    { type: 'Feature', properties: { NAME: 'S. Geo. and the Is.', CONTINENT: 'Seven seas (open ocean)', ADM0_A3: 'SGS' }, geometry: polygon(-36, -55) },
+    { type: 'Feature', properties: { NAME: 'France', CONTINENT: 'Europe', ADM0_A3: 'FRA' }, geometry: polygon(2, 46) },
+    { type: 'Feature', properties: { NAME: 'Egypt', CONTINENT: 'Africa', ADM0_A3: 'EGY' }, geometry: polygon(30, 27) },
+    { type: 'Feature', properties: { NAME: 'Japan', CONTINENT: 'Asia', ADM0_A3: 'JPN' }, geometry: polygon(138, 36) },
+    { type: 'Feature', properties: { NAME: 'Australia', CONTINENT: 'Oceania', ADM0_A3: 'AUS' }, geometry: polygon(134, -25) },
+    { type: 'Feature', properties: { NAME: 'Antarctica', CONTINENT: 'Antarctica', ADM0_A3: 'ATA' }, geometry: polygon(0, -80) },
   ],
 };
 
@@ -26,11 +27,12 @@ test('country normalization creates stable source-backed IDs and continent paren
   const entities = normalizer.normalizeCountryFeatures(fixture);
   const byId = new Map(entities.map((entity) => [entity.id, entity]));
 
-  assert.equal(byId.get('ne:continent:europe')?.kind, 'continent');
+  assert.equal(entities.filter((entity) => entity.kind === 'continent').length, 7);
   assert.equal(byId.get('ne:continent:australia')?.name, 'Australia');
   assert.deepEqual(byId.get('ne:country:FRA')?.parentIds, ['ne:continent:europe']);
   assert.deepEqual(byId.get('ne:country:AUS')?.parentIds, ['ne:continent:australia']);
-  assert.equal(byId.get('ne:country:FRA')?.source.id, 'FRA');
+  assert.deepEqual(byId.get('ne:country:SGS')?.parentIds, ['ne:continent:south-america']);
+  assert.equal(byId.get('ne:country:SGS')?.properties.parentClassificationSource, 'UN M49');
   assert.equal(new Set(entities.map((entity) => entity.id)).size, entities.length);
 
   const withoutCode = structuredClone(fixture);
@@ -38,8 +40,12 @@ test('country normalization creates stable source-backed IDs and continent paren
   assert.throws(() => normalizer.normalizeCountryFeatures(withoutCode), /stable ADM0_A3/i);
 
   const duplicateCode = structuredClone(fixture);
-  duplicateCode.features[1].properties.ADM0_A3 = 'FRA';
+  duplicateCode.features[1].properties.ADM0_A3 = 'USA';
   assert.throws(() => normalizer.normalizeCountryFeatures(duplicateCode), /duplicate/i);
+
+  const unknownOpenOcean = structuredClone(fixture);
+  unknownOpenOcean.features[1].properties.ADM0_A3 = 'ZZZ';
+  assert.throws(() => normalizer.normalizeCountryFeatures(unknownOpenOcean), /unsupported natural earth continent/i);
 });
 
 test('generated explorer foundation index and manifest are internally consistent', async () => {
@@ -64,6 +70,10 @@ test('generated explorer foundation index and manifest are internally consistent
     assert.equal(country.parentIds.length, 1);
     assert.ok(ids.has(country.parentIds[0]), `missing parent ${country.parentIds[0]} for ${country.id}`);
   }
+
+  const sgs = index.entities.find((entity) => entity.id === 'ne:country:SGS');
+  assert.deepEqual(sgs?.parentIds, ['ne:continent:south-america']);
+  assert.equal(sgs?.properties.parentClassificationSource, 'UN M49');
 
   assert.match(manifest.source.url, /ca96624a56bd078437bca8184e78163e5039ad19/);
   assert.equal(manifest.processingVersion, 1);

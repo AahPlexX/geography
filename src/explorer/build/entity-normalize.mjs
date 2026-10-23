@@ -21,6 +21,10 @@ const CONTINENT_ALIASES = new Map([
   ['Antarctica', 'Antarctica'],
 ]);
 
+const CONTINENT_OVERRIDES = new Map([
+  ['SGS', { sourceContinent: 'Seven seas (open ocean)', continent: 'South America', classificationSource: 'UN M49' }],
+]);
+
 function continentId(name) {
   return `ne:continent:${name.toLowerCase().replaceAll(' ', '-')}`;
 }
@@ -46,6 +50,17 @@ function assertFeatureCollection(value) {
   }
 }
 
+function resolveContinent(code, sourceContinent) {
+  const direct = CONTINENT_ALIASES.get(sourceContinent);
+  if (direct) return { continent: direct, classificationSource: null };
+
+  const override = CONTINENT_OVERRIDES.get(code);
+  if (override?.sourceContinent === sourceContinent) {
+    return { continent: override.continent, classificationSource: override.classificationSource };
+  }
+  return null;
+}
+
 export function normalizeCountryFeatures(source) {
   assertFeatureCollection(source);
 
@@ -59,7 +74,7 @@ export function normalizeCountryFeatures(source) {
     const rawCode = typeof properties?.ADM0_A3 === 'string' ? properties.ADM0_A3.trim() : '';
     const code = rawCode.toUpperCase();
     const sourceContinent = typeof properties?.CONTINENT === 'string' ? properties.CONTINENT.trim() : '';
-    const displayContinent = CONTINENT_ALIASES.get(sourceContinent);
+    const resolvedContinent = resolveContinent(code, sourceContinent);
 
     if (!name || !feature?.geometry) {
       throw new TypeError('Explorer country feature requires a name and geometry.');
@@ -70,26 +85,31 @@ export function normalizeCountryFeatures(source) {
     if (seenCodes.has(code)) {
       throw new TypeError(`Duplicate explorer ADM0_A3 identifier: ${code}.`);
     }
-    if (!displayContinent) {
+    if (!resolvedContinent) {
       throw new TypeError(`Unsupported Natural Earth continent for ${name}: ${sourceContinent || '(missing)'}.`);
     }
 
     seenCodes.add(code);
-    featuresByContinent.get(displayContinent).push(feature);
+    featuresByContinent.get(resolvedContinent.continent).push(feature);
     const metadata = geometryMetadata(feature);
+    const normalizedProperties = {
+      isoA3: code,
+      sourceContinent,
+    };
+    if (resolvedContinent.classificationSource) {
+      normalizedProperties.parentClassificationSource = resolvedContinent.classificationSource;
+    }
+
     countries.push({
       id: `ne:country:${code}`,
       kind: 'country',
       name,
       aliases: [],
-      parentIds: [continentId(displayContinent)],
+      parentIds: [continentId(resolvedContinent.continent)],
       source: { dataset: 'natural-earth-50m-admin0', id: code },
       bbox: metadata.bbox,
       centroid: metadata.centroid,
-      properties: {
-        isoA3: code,
-        sourceContinent,
-      },
+      properties: normalizedProperties,
     });
   }
 
@@ -98,8 +118,7 @@ export function normalizeCountryFeatures(source) {
     if (!childFeatures.length) {
       throw new TypeError(`Natural Earth source produced no features for continent ${name}.`);
     }
-    const collection = { type: 'FeatureCollection', features: childFeatures };
-    const metadata = geometryMetadata(collection);
+    const metadata = geometryMetadata({ type: 'FeatureCollection', features: childFeatures });
     return {
       id: continentId(name),
       kind: 'continent',

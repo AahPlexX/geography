@@ -10,7 +10,7 @@
 
 ## GEO-002 — Interactive World Explorer
 
-- Status: inline execution active. A1 verified by run `39959963234`. A2 red verified by run `39960760297`; its minimum foundation-data implementation is in the current green commit awaiting CI/build verification.
+- Status: inline execution active. A1 verified by `39959963234`. A2 red verified by `39960760297`; first green `39961380504` identified the Natural Earth `SGS` open-ocean classification edge case, and the current retry contains the narrow UN M49-backed fix.
 - Requirements: `docs/superpowers/specs/2026-10-22-interactive-world-explorer-design.md`
 - Approval: `docs/superpowers/specs/2026-10-22-interactive-world-explorer-approval.md`
 - Master plan: `docs/superpowers/plans/2026-10-22-interactive-world-explorer.md`
