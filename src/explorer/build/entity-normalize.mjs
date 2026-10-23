@@ -21,9 +21,19 @@ const CONTINENT_ALIASES = new Map([
   ['Antarctica', 'Antarctica'],
 ]);
 
+// Natural Earth 50m labels these territories "Seven seas (open ocean)". Each is keyed by stable ADM0_A3 so any new or
+// unexpected open-ocean feature still fails closed. Parents follow the UN M49 geoscheme.
+const OPEN_OCEAN = 'Seven seas (open ocean)';
 const CONTINENT_OVERRIDES = new Map([
-  ['SGS', { sourceContinent: 'Seven seas (open ocean)', continent: 'South America', classificationSource: 'UN M49' }],
-]);
+  ['SGS', 'South America'],
+  ['SHN', 'Africa'],
+  ['SYC', 'Africa'],
+  ['MUS', 'Africa'],
+  ['IOT', 'Africa'],
+  ['ATF', 'Africa'],
+  ['MDV', 'Asia'],
+  ['HMD', 'Australia'],
+].map(([code, continent]) => [code, { sourceContinent: OPEN_OCEAN, continent, classificationSource: 'UN M49' }]));
 
 function continentId(name) {
   return `ne:continent:${name.toLowerCase().replaceAll(' ', '-')}`;

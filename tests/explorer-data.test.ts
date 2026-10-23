@@ -81,3 +81,18 @@ test('generated explorer foundation index and manifest are internally consistent
   assert.equal(manifest.output.recordCount, index.entities.length);
   assert.equal(manifest.output.sha256, createHash('sha256').update(entitiesRaw).digest('hex'));
 });
+
+test('every open-ocean territory in the pinned Natural Earth source resolves to a UN M49 continent', async () => {
+  const normalizer = await import('../src/explorer/build/entity-normalize.mjs');
+  const source = JSON.parse(await readFile(new URL('../public/data/world-countries.geojson', import.meta.url), 'utf8'));
+  const byId = new Map(normalizer.normalizeCountryFeatures(source).map((entity) => [entity.id, entity]));
+
+  const expected = {
+    SGS: 'south-america', SHN: 'africa', SYC: 'africa', MUS: 'africa', IOT: 'africa', ATF: 'africa', MDV: 'asia', HMD: 'australia',
+  };
+  for (const [code, continent] of Object.entries(expected)) {
+    const country = byId.get(`ne:country:${code}`);
+    assert.deepEqual(country?.parentIds, [`ne:continent:${continent}`], `${code} parent`);
+    assert.equal(country?.properties.parentClassificationSource, 'UN M49', `${code} classification source`);
+  }
+});
