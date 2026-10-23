@@ -42,14 +42,14 @@ test('country normalization creates stable source-backed IDs and continent paren
   assert.throws(() => normalizer.normalizeCountryFeatures(duplicateCode), /duplicate/i);
 });
 
-test('committed explorer foundation index and manifest are internally consistent', async () => {
+test('generated explorer foundation index and manifest are internally consistent', async () => {
   const [entitiesRaw, manifestRaw] = await Promise.all([
     readFile(new URL('../public/data/explorer/entities.json', import.meta.url), 'utf8').catch(() => ''),
     readFile(new URL('../public/data/explorer/manifest.json', import.meta.url), 'utf8').catch(() => ''),
   ]);
 
-  assert.ok(entitiesRaw, 'expected committed explorer entity index');
-  assert.ok(manifestRaw, 'expected committed explorer source manifest');
+  assert.ok(entitiesRaw, 'expected generated explorer entity index');
+  assert.ok(manifestRaw, 'expected generated explorer source manifest');
 
   const index = JSON.parse(entitiesRaw);
   const manifest = JSON.parse(manifestRaw);

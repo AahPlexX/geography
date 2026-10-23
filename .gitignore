@@ -2,5 +2,6 @@ node_modules/
 dist/
 public/data/world-countries.geojson
 public/data/world-countries.meta.json
+public/data/explorer/
 *.tsbuildinfo
 .DS_Store

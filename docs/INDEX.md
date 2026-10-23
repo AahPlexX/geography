@@ -10,7 +10,7 @@
 
 ## GEO-002 — Interactive World Explorer
 
-- Status: inline execution active. A1 direct `/explore/` foundation verified by Actions run `39959963234`; A2 normalized foundation-data pipeline is in red-test stage.
+- Status: inline execution active. A1 verified by run `39959963234`. A2 red verified by run `39960760297`; its minimum foundation-data implementation is in the current green commit awaiting CI/build verification.
 - Requirements: `docs/superpowers/specs/2026-10-22-interactive-world-explorer-design.md`
 - Approval: `docs/superpowers/specs/2026-10-22-interactive-world-explorer-approval.md`
 - Master plan: `docs/superpowers/plans/2026-10-22-interactive-world-explorer.md`
