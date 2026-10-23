@@ -54,6 +54,7 @@ Keep each fact in one authoritative place and link to it instead of copying it i
 
 - Package manager: pnpm only.
 - Pin every direct dependency version; do not use caret or tilde ranges.
+- Versioning: the app version is `package.json` `version` (owner-mandated baseline `1.0.0`, decision D-038). Every significant update bumps the patch by `0.0.1` in the same work step; deployed clients compare it against `version.json` and prompt the learner to update.
 - Verify the current stable/supported dependency version from authoritative sources before adding or changing a dependency.
 - Prefer existing code, then browser/platform APIs, then installed dependencies, then the smallest necessary custom code.
 - Do not add speculative abstractions, unused extension points, placeholder features, or dependencies without a present requirement.

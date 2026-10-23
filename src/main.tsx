@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { LandingPage } from './components/LandingPage';
 import { StandaloneMapPage } from './components/StandaloneMapPage';
+import { UpdatePrompt } from './components/UpdatePrompt';
 import { ExplorerPage } from './explorer/ExplorerPage';
 import { resolveAppRoute } from './lib/app-route';
 import './styles.css';
@@ -22,5 +23,6 @@ const page = route === 'exam'
 createRoot(root).render(
   <StrictMode>
     {page}
+    <UpdatePrompt />
   </StrictMode>,
 );

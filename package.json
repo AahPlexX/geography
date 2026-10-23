@@ -14,7 +14,7 @@
     "prebuild": "node scripts/fetch-map.mjs && node scripts/build-explorer-foundation.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "test": "node --experimental-strip-types --test tests/study-state.test.ts tests/domain-state.test.ts tests/score-history.test.ts tests/curriculum-expansion.test.ts tests/exam-experience.test.ts tests/explorer-foundation.test.ts tests/explorer-data.test.ts",
+    "test": "node --experimental-strip-types --test tests/study-state.test.ts tests/domain-state.test.ts tests/score-history.test.ts tests/curriculum-expansion.test.ts tests/exam-experience.test.ts tests/explorer-foundation.test.ts tests/explorer-data.test.ts tests/app-version.test.ts",
     "validate": "pnpm test && pnpm build"
   },
   "dependencies": {
