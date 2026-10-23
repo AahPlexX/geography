@@ -12,6 +12,7 @@ export default defineConfig({
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
         exam: fileURLToPath(new URL('./exam/index.html', import.meta.url)),
         map: fileURLToPath(new URL('./map/index.html', import.meta.url)),
+        explore: fileURLToPath(new URL('./explore/index.html', import.meta.url)),
       },
     },
   },

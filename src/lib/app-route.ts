@@ -1,4 +1,4 @@
-export type AppRoute = 'home' | 'exam' | 'map';
+export type AppRoute = 'home' | 'exam' | 'map' | 'explore';
 
 function normalizeBasePath(basePath: string) {
   const withLeadingSlash = basePath.startsWith('/') ? basePath : `/${basePath}`;
@@ -11,5 +11,6 @@ export function resolveAppRoute(pathname: string, basePath: string): AppRoute {
   const [segment = ''] = relativePath.split('/').filter(Boolean);
   if (segment === 'exam') return 'exam';
   if (segment === 'map') return 'map';
+  if (segment === 'explore') return 'explore';
   return 'home';
 }

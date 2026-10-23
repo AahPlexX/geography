@@ -3,13 +3,15 @@ project: AahPlexX/geography
 work_units: [GEO-001, GEO-002]
 document_status: active
 authoritative_branch: main
-last_updated: 2026-10-22
+last_updated: 2026-10-23
 ---
 
 # Decision log
 
 Newest first. One material fact per line.
 
+- 2026-10-23 D-037: Phase A Task A1 adds `/geography/explore/` as a fourth direct Vite/GitHub Pages HTML entry with an isolated minimal `ExplorerPage`; the existing `/map/` page remains separate and explorer routing does not share or mutate exam answer/score state. Red evidence is Actions run `39959204385` (32 pass / 1 expected fail before implementation). Source: Phase A plan and `tests/explorer-foundation.test.ts`.
+- 2026-10-23 D-036: GEO-002 is executed inline in the current host because no genuine subagent dispatch/spawn capability is exposed; the owner explicitly prohibited simulated/emulated subagents and selected inline execution as the fallback while retaining the same TDD/validation gates. Source: owner execution-mode direction, `docs/tracker/GEO-002.md`, and `docs/tasks/GEO-002.md`.
 - 2026-10-22 D-035: GEO-002 implementation is decomposed into four independently reviewable phases: Foundation, Global Data Expansion, Learning & Enrichment, and Exploration Tools & Release Hardening; each phase has a dedicated plan plus a master requirement-coverage roadmap. Source: `docs/superpowers/plans/2026-10-22-interactive-world-explorer.md`.
 - 2026-10-22 D-034: GEO-002 interaction planning recommends exact pins `d3-zoom@3.0.0`, `d3-selection@3.0.0`, `@types/d3-zoom@3.0.9`, and `@types/d3-selection@3.0.12`, re-verified 2026-10-22; SVG remains the initial renderer and Canvas/WebGL is reserved for evidence-driven performance need. Source: GEO-002 master/Foundation plans.
 - 2026-10-22 D-033: Owner-delegated implementation decisions set initial GEO-002 behavior to exact/prefix/substring local search ranking; topmost enabled visible layer selection precedence; exactly-two compare; two-point geodesic measurement; 20-item recent history; four curated World Bank indicators; and on-demand, non-prefetched Wikimedia enrichment. Source: GEO-002 master plan.
@@ -17,7 +19,7 @@ Newest first. One material fact per line.
 - 2026-10-22 D-031: GEO-002 uses a local-first static atlas architecture: build-time validated/chunked geographic assets and a compact local search/entity index are authoritative; detailed layers load progressively and external API failure cannot blank core exploration. Source: GEO-002 spec.
 - 2026-10-22 D-030: The Interactive World Explorer is a separate project-within-the-project at `/geography/explore/`; existing landing, exam, Study Sheet, score history, and standalone `/map/` behavior remain preserved. Source: GEO-002 spec.
 - 2026-10-22 D-029: GEO-002 core interactions require parity across touch, mouse, wheel/trackpad, and keyboard; no required task may rely only on hover or only on a gesture. Source: GEO-002 spec.
-- 2026-10-22 D-028: Post-deploy smoke verification covers all three existing public HTML entry points (`/geography/`, `/geography/exam/`, and `/geography/map/`) with expected page titles, verifies a hashed JavaScript bundle from each page, and continues to verify the detailed world-map data asset. GEO-002 will extend this gate to `/geography/explore/` before release. Source: `.github/workflows/deploy.yml` and GEO-002 spec.
+- 2026-10-22 D-028: Post-deploy smoke verification covers all three existing public HTML entry points (`/geography/`, `/geography/exam/`, and `/geography/map/`) with expected page titles, verifies a hashed JavaScript bundle from each page, and continues to verify the detailed world-map data asset. GEO-002 extends this gate to `/geography/explore/` during Phase A A1. Source: `.github/workflows/deploy.yml` and GEO-002 spec.
 - 2026-10-22 D-027: The root `/geography/` route is a learner landing page rather than an active exam; `/geography/exam/` and `/geography/map/` are real GitHub Pages HTML entry points sharing the existing React bundle-selection logic, with no router dependency. Source: active amendment A-009.
 - 2026-10-22 D-026: Exam order is one persisted Fisher-Yates permutation per attempt, generated with default random source `Math.random()` and reused on reload; reset/new attempt generates a new permutation, while stable curriculum IDs remain answer/deep-link keys and learner-facing numbering uses sequence position. Source: active amendment A-009.
 - 2026-10-22 D-025: Exam/practice visuals are explicit opt-in question data and never inferred from category or legacy study stage; non-visual questions render no diagram, teacher-key sorting questions remain non-visual when an accurate map could conflict with the worksheet key, and Study Sheet/standalone-map interactions are reference-only. Source: active amendment A-009.

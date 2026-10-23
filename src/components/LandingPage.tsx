@@ -37,6 +37,12 @@ export function LandingPage() {
 
           <div className="reference-grid">
             <section>
+              <h3>Explore the world</h3>
+              <p>Open the dedicated interactive atlas to explore geography without changing your exam answers, progress, or score.</p>
+              <a className="primary-button" style={linkStyle} href={`${base}explore/`}>Open world explorer</a>
+            </section>
+
+            <section>
               <h3>Randomized exam</h3>
               <p>Take all 80 questions in a shuffled order that stays the same if you refresh. A new attempt creates a new order.</p>
               <a className="primary-button" style={linkStyle} href={`${base}exam/?view=quiz`}>Start exam</a>

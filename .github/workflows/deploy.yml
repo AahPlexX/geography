@@ -97,6 +97,7 @@ jobs:
           fetch_page "" "Geography Study Lab"
           fetch_page "exam/" "Geography Exam"
           fetch_page "map/" "Geography Map"
+          fetch_page "explore/" "Interactive World Explorer"
 
           map_bytes="$(curl --fail --silent --show-error --location --max-time 30 "${base}data/world-countries.geojson" | wc -c)"
           test "$map_bytes" -gt 100000

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { LandingPage } from './components/LandingPage';
 import { StandaloneMapPage } from './components/StandaloneMapPage';
+import { ExplorerPage } from './explorer/ExplorerPage';
 import { resolveAppRoute } from './lib/app-route';
 import './styles.css';
 
@@ -14,7 +15,9 @@ const page = route === 'exam'
   ? <App defaultView="quiz" />
   : route === 'map'
     ? <StandaloneMapPage />
-    : <LandingPage />;
+    : route === 'explore'
+      ? <ExplorerPage />
+      : <LandingPage />;
 
 createRoot(root).render(
   <StrictMode>

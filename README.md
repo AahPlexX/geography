@@ -1,6 +1,6 @@
 # Geography Study Lab
 
-A focused Grade 3 geography study site built from the supplied Bayou Bridges and world-geography material, with a separately planned Interactive World Explorer subproject. The primary learner is preparing for the same classroom test material; the site is public so anyone can use the study set.
+A focused Grade 3 geography study site built from the supplied Bayou Bridges and world-geography material, with an additive Interactive World Explorer subproject now in development. The primary learner is preparing for the same classroom test material; the site is public so anyone can use the study set.
 
 Live site: `https://aahplexx.github.io/geography/`
 
@@ -22,13 +22,15 @@ Deployed 1440 px WCAG 2.2 A/AA automation from the earlier interface reports zer
 
 ## GEO-002 — Interactive World Explorer
 
-GEO-002 is an approved additive project-within-the-project intended for `/geography/explore/`. Production explorer implementation has **not** started yet and the route is not claimed live.
+GEO-002 is an approved additive project-within-the-project for `/geography/explore/`. Phase A implementation is now underway in inline execution mode; the current host has no genuine subagent-dispatch capability, and simulated subagents are intentionally not used.
+
+Task A1 is test-first. GitHub Actions run `39959204385` established the red contract with 32 existing tests passing and exactly one expected failure: `/geography/explore/` still resolved to `home` instead of `explore`. The minimum A1 implementation now adds the direct explorer HTML entry, isolated explorer shell, route selection, additive landing card, Vite input, and four-page public smoke coverage. That route is **not claimed live/verified until the current green CI, Pages deployment, and smoke gate complete**.
 
 The approved architecture is local-first: pinned/validated Natural Earth layers will provide canonical spatial data for continents, countries/territories, global Admin-1 states/provinces, water/marine features, rivers/lakes, physical regions/landforms, and populated places represented by the selected datasets. Optional World Bank and Wikimedia requests may enrich visible entity details but cannot be required for the explorer to function and cannot require signup, payment, API keys, or private credentials.
 
 The explorer design requires touch, mouse, wheel/trackpad, and keyboard parity; progressive/lazy geographic detail; local one-character typeahead search; hierarchy/breadcrumb navigation; adaptive phone/tablet/desktop detail surfaces; related exploration; exactly-two compare; two-point geodesic distance measurement; local bookmarks and 20-item recent history; deep links; fail-soft enrichment; WCAG 2.2 AA target; and explicit regression protection for every existing GEO-001 route/behavior.
 
-The GEO-002 specification is approved. A master implementation roadmap plus four independently executable phase plans are committed and self-reviewed. The next workflow gate is plan-execution mode selection; after that, implementation begins at Phase A Task A1 with a focused failing test for the additive explorer route/entry/build/smoke wiring.
+The GEO-002 specification and master/four-phase implementation plan set are approved and self-reviewed. Execution status and exact resume instructions live in `docs/tracker/GEO-002.md`, `docs/tasks/GEO-002.md`, and `progress.md`.
 
 ## Authoritative documents
 
@@ -54,6 +56,7 @@ See [`docs/INDEX.md`](docs/INDEX.md) for the complete work-unit index.
 - Phase D — Exploration Tools & Release Hardening: [`docs/superpowers/plans/2026-10-22-interactive-world-explorer-tools-release.md`](docs/superpowers/plans/2026-10-22-interactive-world-explorer-tools-release.md)
 - Status/evidence: [`docs/tracker/GEO-002.md`](docs/tracker/GEO-002.md)
 - Tasks: [`docs/tasks/GEO-002.md`](docs/tasks/GEO-002.md)
+- Execution ledger: [`progress.md`](progress.md)
 
 ### Shared
 
@@ -62,4 +65,4 @@ See [`docs/INDEX.md`](docs/INDEX.md) for the complete work-unit index.
 
 ## Stack
 
-Vite + React + TypeScript + Tailwind CSS + `d3-geo`, managed with pnpm and deployed to GitHub Pages through GitHub Actions. Direct dependencies are exact-pinned. GEO-002 planning has re-verified and recommends exact additions `d3-zoom@3.0.0`, `d3-selection@3.0.0`, `@types/d3-zoom@3.0.9`, and `@types/d3-selection@3.0.12`; those dependencies are not claimed installed until implementation actually begins and passes the repository's dependency/build gates.
+Vite + React + TypeScript + Tailwind CSS + `d3-geo`, managed with pnpm and deployed to GitHub Pages through GitHub Actions. Direct dependencies are exact-pinned. GEO-002 planning has re-verified and recommends exact additions `d3-zoom@3.0.0`, `d3-selection@3.0.0`, `@types/d3-zoom@3.0.9`, and `@types/d3-selection@3.0.12`; those interaction dependencies are not claimed installed until Phase A Task A4 actually adds and verifies them.
