@@ -2,30 +2,28 @@
 
 ## GEO-001 — Geography Study Lab
 
-- Product/design requirements: `docs/superpowers/specs/2026-10-21-geography-study-site-design.md`
-- Active product/design amendments: `docs/superpowers/specs/2026-10-21-geography-study-site-amendments.md`
-- Implementation plans:
-  - `docs/superpowers/plans/2026-10-21-geography-study-site.md`
-  - `docs/superpowers/plans/2026-10-22-randomized-exam-map-visual-gating.md`
-- Status/evidence: `docs/tracker/GEO-001.md`
-- Task execution: `docs/tasks/GEO-001.md`
+- Requirements: `docs/superpowers/specs/2026-10-21-geography-study-site-design.md`
+- Amendments: `docs/superpowers/specs/2026-10-21-geography-study-site-amendments.md`
+- Plans: `docs/superpowers/plans/2026-10-21-geography-study-site.md`, `docs/superpowers/plans/2026-10-22-randomized-exam-map-visual-gating.md`
+- Tracker: `docs/tracker/GEO-001.md`
+- Tasks: `docs/tasks/GEO-001.md`
 
 ## GEO-002 — Interactive World Explorer
 
-- Status: specification and implementation plan set approved; inline execution active; Phase A Task A1 has valid red evidence and its minimum `/explore/` implementation is awaiting green CI/build/deploy/smoke verification.
-- Product/design requirements: `docs/superpowers/specs/2026-10-22-interactive-world-explorer-design.md`
-- Specification approval status: `docs/superpowers/specs/2026-10-22-interactive-world-explorer-approval.md`
-- Master implementation roadmap: `docs/superpowers/plans/2026-10-22-interactive-world-explorer.md`
-- Phase A — Foundation: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-foundation.md`
-- Phase B — Global Data Expansion: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-data.md`
-- Phase C — Learning & Enrichment: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-learning.md`
-- Phase D — Exploration Tools & Release Hardening: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-tools-release.md`
-- Status/evidence: `docs/tracker/GEO-002.md`
-- Task execution: `docs/tasks/GEO-002.md`
+- Status: inline execution active. A1 direct `/explore/` foundation verified by Actions run `39959963234`; A2 normalized foundation-data pipeline is in red-test stage.
+- Requirements: `docs/superpowers/specs/2026-10-22-interactive-world-explorer-design.md`
+- Approval: `docs/superpowers/specs/2026-10-22-interactive-world-explorer-approval.md`
+- Master plan: `docs/superpowers/plans/2026-10-22-interactive-world-explorer.md`
+- Phase A: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-foundation.md`
+- Phase B: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-data.md`
+- Phase C: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-learning.md`
+- Phase D: `docs/superpowers/plans/2026-10-22-interactive-world-explorer-tools-release.md`
+- Tracker: `docs/tracker/GEO-002.md`
+- Tasks: `docs/tasks/GEO-002.md`
 - Execution ledger: `progress.md`
 
-## Shared repository records
+## Shared
 
 - Decisions: `docs/DECISIONS.md`
 - Repository rules: `AGENTS.md`
-- Root project overview: `README.md`
+- Overview: `README.md`
